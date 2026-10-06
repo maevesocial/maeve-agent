@@ -38,7 +38,7 @@ Maeve supports Instagram, Facebook, TikTok, LinkedIn, LinkedIn Pages, X, Threads
 Add this repository as a Codex plugin marketplace:
 
 ```bash
-codex plugin marketplace add jared-james/maeve-agent
+codex plugin marketplace add maevesocial/maeve-agent
 ```
 
 Open the plugin browser and install `maeve-agent`:
@@ -72,7 +72,7 @@ When prompted, authenticate with Maeve in your browser. Grok Build will load the
 Install the extension directly from GitHub:
 
 ```bash
-gemini extensions install https://github.com/jared-james/maeve-agent
+gemini extensions install https://github.com/maevesocial/maeve-agent
 ```
 
 When prompted, authenticate with Maeve in your browser. Gemini CLI will discover the bundled skill and connect to Maeve's hosted MCP server.
@@ -82,7 +82,7 @@ When prompted, authenticate with Maeve in your browser. Gemini CLI will discover
 Install the portable Agent Plugin directly from GitHub:
 
 ```bash
-qwen extensions install jared-james/maeve-agent
+qwen extensions install maevesocial/maeve-agent
 ```
 
 When prompted, authenticate with Maeve in your browser. Qwen Code will load the shared skill and Streamable HTTP MCP server from the portable Agent Plugin package.
@@ -92,7 +92,7 @@ When prompted, authenticate with Maeve in your browser. Qwen Code will load the 
 Add the marketplace and install the plugin:
 
 ```text
-/plugin marketplace add jared-james/maeve-agent
+/plugin marketplace add maevesocial/maeve-agent
 /plugin install maeve-agent@maeve-agent
 /reload-plugins
 ```
@@ -264,7 +264,7 @@ The hosted backend, this repository, and ChatGPT plugin metadata have separate r
 - Support: https://maevesocial.com/contact or `support@maevesocial.com`
 - Privacy policy: https://maevesocial.com/privacy
 - Terms of service: https://maevesocial.com/terms
-- Issues: https://github.com/jared-james/maeve-agent/issues
+- Issues: https://github.com/maevesocial/maeve-agent/issues
 
 ## License
 
