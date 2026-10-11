@@ -28,6 +28,7 @@
         "websiteURL": "https://maevesocial.com"
       },
       "review": {
+        "demo_recording_url": "https://youtu.be/xpMgHQmJu_g",
         "test_cases": {
           "positive": [
             {
@@ -78,6 +79,7 @@
         }
       },
       "publication": {
+        "countries": [],
         "release_notes": "Use individually declared Maeve tools through the dedicated OpenAI endpoint. Update connection recovery for the stateless server, keep workspace permissions and confirmation safeguards, and add the Maeve icon and review examples. Existing Claude and other four-tool clients keep their current endpoint."
       }
     }

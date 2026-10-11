@@ -13,7 +13,9 @@ Target the replacement listing `plugin_asdk_app_6ac1a331c0248191827893f61e4504e2
 
 ## Review prerequisites
 
-Country targeting needs to agree with the owner's selection and the published terms. The terms inspected on 12 October limit accounts to Australia, New Zealand and the United States; resolve this before submission.
+The owner explicitly selected all supported countries and will resolve the published terms mismatch. The package uses an empty `publication.countries` list to remove country restrictions. The terms inspected on 12 October limit accounts to Australia, New Zealand and the United States; do not edit those terms or attest that the mismatch is resolved on the owner's behalf.
+
+The owner supplied the existing unlisted recording at https://youtu.be/xpMgHQmJu_g (Studio filename `2026-08-25 09-19-35.mp4`, duration about 3 minutes 48 seconds). Playback works and the URL is retained in `review.demo_recording_url`. Sampled scenes show the earlier ChatGPT plugin, scheduled-content reads, a draft request and scheduling in the Apple Review workspace. This is historical workflow evidence, not a recording of version 3.0.0 or proof that its review cases passed. A current-version walkthrough and complete recording review remain outstanding.
 
 Use a dedicated reviewer account with sample data and suitable plan access. It needs one review workspace, sample Media Room images, analytics access and a connected account supporting text-only drafts. Store credentials and login instructions only in secure Portal fields. Do not use a real customer's account or commit credentials here.
 
@@ -28,8 +30,8 @@ The demo must show the actual replacement tools and skill in ChatGPT. Rehearse w
 | Five positive cases against the saved OpenAI 3.0.0 package | Not run |
 | Three negative cases against the saved OpenAI 3.0.0 package | Not run |
 | Reviewer sign-in and fixture prerequisites | Not verified |
-| Demo recording and reviewer-accessible URL | Missing |
-| Replacement Portal connection and tool scan | Incomplete in the existing 2.0.1 draft |
+| Demo recording and reviewer-accessible URL | Existing unlisted recording plays; current-version coverage and full review remain outstanding |
+| Replacement Portal connection and tool scan | Existing 2.0.1 draft configured and authorized for Personal / Development read/write only; direct tools discovered, scan pending |
 | Developer legal/policy attestations | Must be completed by the authorized developer |
 
 Source validation, uploading a draft, submitting for review and publishing an approved version are separate outcomes. An archive with missing review materials is a preparation artifact, not a submission-ready release.
