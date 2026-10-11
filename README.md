@@ -115,6 +115,8 @@ https://api.maevesocial.com/mcp
 
 Add that endpoint to any compatible client and use its **Authenticate** action to sign in to Maeve.
 
+The hosted server uses stateless Streamable HTTP. Existing connections use the updated server without a URL change. After a connection failure, reconnect through your client and continue from saved Maeve IDs; an interrupted response does not prove a write failed. The separate OpenAI submission uses `/mcp/openai` and its own package under [openai/](openai/README.md).
+
 Example Codex configuration in `~/.codex/config.toml`:
 
 ```toml

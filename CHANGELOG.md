@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2
+
+- Explain stateless MCP reconnection and retain saved resource IDs when recovering uncertain writes.
+- Align CLI command and confirmation references with maeve-cli 0.13.2.
+- Clarify the separate four-tool and OpenAI connections, and use the maevesocial GitHub organization in installation references.
+
 ## 1.1.1
 
 - Note that X Article images, inline and cover, must be 5 MB or less, which is the most X accepts.
