@@ -19,7 +19,7 @@ The owner supplied the existing unlisted recording at https://youtu.be/xpMgHQmJu
 
 Use a dedicated reviewer account with sample data and suitable plan access. It needs one review workspace, sample Media Room images, analytics access and a connected account supporting text-only drafts. Store credentials and login instructions only in secure Portal fields. Do not use a real customer's account or commit credentials here.
 
-The earlier production verification record identifies App Store Connect's Maeve Social App Review Information as the saved credential source for the dedicated Apple Review account. It was verified against production on 12 September. Recheck current sign-in and fixtures before reusing it for OpenAI. The environment archive's `DIRECTORY_ACCOUNT_PASSWORD` entries belong to another project; the old `MAEVE_TEST_*` mobile login is not established as this reviewer account.
+On 12 October, a separate OpenAI 3.0 reviewer account was provisioned with organization member and workspace manager roles, restricted to Personal / Apple Review. Its fresh production password login succeeded, the workspace switcher exposed only Apple Review, and media, two connected sample channels and analytics loaded. Its credentials and login instructions were saved in the replacement Portal's secure reviewer fields and verified after reopening. An encrypted operator recovery copy is retained outside the repositories. No credentials belong in this document or the ZIP. The Apple and older OpenAI reviewer accounts were preserved.
 
 The demo must show the actual replacement tools and skill in ChatGPT. Rehearse workspace discovery, scheduled-content reads, media selection, analytics with honest missing-data handling, and draft-only creation followed by readback. Finish with an unsupported billing or account-connection request. Keep credentials and unrelated content off screen. Record the real interaction, verify playback, host it for reviewers and add its verified URL to `review.demo_recording_url` before rebuilding the submission ZIP.
 
@@ -31,7 +31,7 @@ The demo must show the actual replacement tools and skill in ChatGPT. Rehearse w
 | Existing production MCP discovery and workspace reads | Passed |
 | Five positive cases against the saved OpenAI 3.0.0 package | Not run |
 | Three negative cases against the saved OpenAI 3.0.0 package | Not run |
-| Reviewer sign-in and fixture prerequisites | Not verified |
+| Reviewer sign-in and fixture prerequisites | Fresh production sign-in, single-workspace access, media, connected Facebook/Threads channels and analytics verified in Chrome; MCP review cases still not run |
 | Demo recording and reviewer-accessible URL | Existing unlisted recording plays; current-version coverage and full review remain outstanding |
 | Replacement Portal connection and tool scan | Existing 2.0.1 draft configured and authorized for Personal / Development read/write only; direct tools discovered, scan pending |
 | Developer legal/policy attestations | Must be completed by the authorized developer |
