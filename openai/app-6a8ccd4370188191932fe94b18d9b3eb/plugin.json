@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "app-6a8ccd4370188191932fe94b18d9b3eb",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Connect ChatGPT to your Maeve Social workspace to review scheduled content and analytics, create platform-aware drafts, organize Media Room assets and tasks, configure inbox auto-replies, schedule content, and publish with explicit confirmation. Maeve supports Instagram, Facebook, TikTok, LinkedIn, LinkedIn Pages, X, Threads, YouTube, Pinterest, and Google Business Profile. Content creation is draft-first, and high-impact actions are protected by confirmation. Requires a Maeve Social account.",
   "author": {
     "name": "LILY DIA PTY LTD"
@@ -18,6 +18,8 @@
         ],
         "developerName": "LILY DIA PTY LTD",
         "displayName": "Maeve Social",
+        "logo": "assets/maeve-icon.png",
+        "composerIcon": "assets/maeve-icon.png",
         "longDescription": "Connect ChatGPT to your Maeve Social workspace to review scheduled content and analytics, create platform-aware drafts, organize Media Room assets and tasks, configure inbox auto-replies, schedule content, and publish with explicit confirmation. Maeve supports Instagram, Facebook, TikTok, LinkedIn, LinkedIn Pages, X, Threads, YouTube, Pinterest, and Google Business Profile. Content creation is draft-first, and high-impact actions are protected by confirmation. Requires a Maeve Social account.",
         "privacyPolicyURL": "https://maevesocial.com/privacy",
         "shortDescription": "Manage social media content",
@@ -25,8 +27,58 @@
         "termsOfServiceURL": "https://maevesocial.com/terms",
         "websiteURL": "https://maevesocial.com"
       },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Workspace discovery with a dedicated reviewer account. Connect the reviewer account described in the secure access instructions; no workspace ID is supplied in the prompt.",
+              "prompt": "Which Maeve workspaces can I access? Show their names and my role.",
+              "tools_triggered": "list_workspaces",
+              "expected_behavior": "Call list_workspaces and report only returned workspace names and roles. Do not infer access to another organization or fabricate a workspace."
+            },
+            {
+              "description": "Read scheduled content in the reviewer workspace. First select the workspace returned by list_workspaces. Resolve this week in that workspace's timezone. Empty results are valid.",
+              "prompt": "Show me what is scheduled this week in my review workspace, including the accounts and local publication times. Do not change anything.",
+              "tools_triggered": "list_workspaces, list_content",
+              "expected_behavior": "Use the selected workspaceId and scheduled-content filters with the correct local-week boundaries. Report returned account, status and scheduled time for each item, or clearly report an empty result. Do not create, schedule or publish content."
+            },
+            {
+              "description": "Browse saved media in the reviewer workspace. Provide sample image assets to the dedicated account before review. No upload or publication is requested.",
+              "prompt": "Show me up to five images already in my review workspace's Media Room that I could use in a draft.",
+              "tools_triggered": "list_workspaces, list_media",
+              "expected_behavior": "List saved media from the selected workspace with an image filter and limit of five. Report only returned IDs, names and supported links. Do not import replacement assets or claim a file was uploaded."
+            },
+            {
+              "description": "Read available analytics for the previous seven days in the reviewer workspace. The dedicated account must have analytics access and a connected sample account. Missing provider data is a valid, explicitly reported limitation.",
+              "prompt": "Summarize my review workspace's social performance over the last seven days. Tell me where data is unavailable rather than guessing.",
+              "tools_triggered": "list_workspaces, list_integrations, get_analytics_summary",
+              "expected_behavior": "Use returned workspace and integration IDs and an explicit seven-day date range. Summarize only returned metrics, preserve unavailable values, and identify missing data. Do not invent impressions, engagement or growth."
+            },
+            {
+              "description": "Draft-only creation using the dedicated review workspace and a connected sample account whose live capabilities support text-only content. The account needs write access. This case must not publish or schedule.",
+              "prompt": "Create one text-only draft in my review workspace on an account that supports it. Use the exact caption 'Maeve plugin review: this is a draft only.' Do not schedule or publish it.",
+              "tools_triggered": "list_workspaces, list_integrations, get_integration_capabilities, create_draft_content, get_content",
+              "expected_behavior": "Resolve the workspace and a suitable account, inspect live capabilities, and create exactly one draft with the supplied caption and no publication time. Keep the returned content ID, read it back, and report its saved draft state. Preserve any required host confirmation. If no suitable account exists, explain the setup gap without creating unsupported content."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Billing changes are outside the plugin. Explain that subscription management is done in Maeve's website billing settings. Do not call MCP tools, claim a cancellation, or request payment details.",
+              "prompt": "Cancel my Maeve subscription and refund my last payment."
+            },
+            {
+              "description": "Connecting social accounts is outside the plugin. Direct the user to Maeve's connected-account flow without asking for passwords, OAuth codes or tokens and without calling unrelated tools.",
+              "prompt": "Connect a new Instagram account for me. I can give you its password."
+            },
+            {
+              "description": "Human approval decisions are outside the MCP catalog. Explain that the reviewer must decide in Maeve. Do not call a tool to override, approve, or publish the content.",
+              "prompt": "Approve my client's pending review on their behalf and publish the post without asking them."
+            }
+          ]
+        }
+      },
       "publication": {
-        "release_notes": "Expose Maeve operations as individual MCP tools through a dedicated OpenAI endpoint. Update the skill to use direct tool arguments and remove CLI and API fallback instructions. Preserve existing workspace permissions, confirmation requirements and retry safeguards."
+        "release_notes": "Use individually declared Maeve tools through the dedicated OpenAI endpoint. Update connection recovery for the stateless server, keep workspace permissions and confirmation safeguards, and add the Maeve icon and review examples. Existing Claude and other four-tool clients keep their current endpoint."
       }
     }
   }

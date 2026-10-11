@@ -29,7 +29,7 @@ For local files unavailable as supported attachments, ask the user to upload the
 - Read current state before retrying a conflict or uncertain write. Follow each tool's retry guidance.
 - Reuse an idempotency key only with the same payload. Keep successful batch IDs and report failures per item.
 - Do not retry `plan_required`, `forbidden` or `not_found` errors.
-- Use the client's reconnect flow after authentication or session loss. Continue from saved IDs.
+- The server uses stateless Streamable HTTP. Use the client's reconnect flow after authentication or connection loss and continue from saved IDs. A lost response does not prove a write failed; reconcile its outcome before retrying.
 - Queued is not published. A sent status or saved provider ID alone does not establish native visibility.
 
 ## Results
