@@ -1,39 +1,30 @@
-# OpenAI 3.0.0 submission preparation
+# OpenAI 3.0.0 review
 
-Target the replacement listing `plugin_asdk_app_6ac1a331c0248191827893f61e4504e2`. The original 2.0.0 listing stays published during review. The package name already saved in the replacement draft remains `app-6a8ccd4370188191932fe94b18d9b3eb`; it is not the Portal app binding.
+Checked on 12 October 2026: the [replacement listing](https://platform.openai.com/plugins/manage/plugin_asdk_app_6ac1a331c0248191827893f61e4504e2) is submitted and in review, not published. The original 2.0.0 listing remains available during review.
 
-## Package
+## Submitted package
 
-- Version: 3.0.0, using the production `/mcp/openai` endpoint and direct-tool skill.
-- Publisher: LILY DIA PTY LTD, confirmed by the owner.
-- Listing, support, privacy and terms URLs were inspected on 12 October 2026. The privacy policy covers external assistants and permission-scoped sharing.
-- Reuse the existing 512 by 512 Maeve PNG for the listing and composer. No new artwork is required.
-- Five positive cases and three negative cases are in `plugin.json`. Do not count them as passed until run against the saved replacement version.
-- Subscriptions are purchased through Maeve's website; the plugin does not collect payment details or manage subscriptions.
+- Version 3.0.0 uses `https://api.maevesocial.com/mcp/openai` and its own direct-tool skill.
+- The package name remains `app-6a8ccd4370188191932fe94b18d9b3eb`. It is independent of the replacement Portal app ID.
+- The listing describes Maeve Social as a social media scheduler and management platform, with the existing icon for the listing and composer.
+- Publisher: LILY DIA PTY LTD. The owner selected all supported countries. Subscriptions are purchased only through Maeve's website.
+- Dedicated reviewer credentials and instructions are saved in private Portal fields. The account is restricted to one populated review workspace; fresh sign-in, workspace isolation, saved media, Facebook and Threads accounts, and analytics were verified. Credentials and recovery copies stay outside this repository and the ZIP.
 
-## Review prerequisites
-
-The owner explicitly selected all supported countries and will resolve the published terms mismatch. The package uses an empty `publication.countries` list to remove country restrictions. The terms inspected on 12 October limit accounts to Australia, New Zealand and the United States; do not edit those terms or attest that the mismatch is resolved on the owner's behalf.
-
-The owner supplied the existing unlisted recording at https://youtu.be/xpMgHQmJu_g (Studio filename `2026-08-25 09-19-35.mp4`, duration about 3 minutes 48 seconds). Playback works and the URL is retained in `review.demo_recording_url`. Sampled scenes show the earlier ChatGPT plugin, scheduled-content reads, a draft request and scheduling in the Apple Review workspace. This is historical workflow evidence, not a recording of version 3.0.0 or proof that its review cases passed. A current-version walkthrough and complete recording review remain outstanding.
-
-Use a dedicated reviewer account with sample data and suitable plan access. It needs one review workspace, sample Media Room images, analytics access and a connected account supporting text-only drafts. Store credentials and login instructions only in secure Portal fields. Do not use a real customer's account or commit credentials here.
-
-On 12 October, a separate OpenAI 3.0 reviewer account was provisioned with organization member and workspace manager roles, restricted to Personal / Apple Review. Its fresh production password login succeeded, the workspace switcher exposed only Apple Review, and media, two connected sample channels and analytics loaded. Its credentials and login instructions were saved in the replacement Portal's secure reviewer fields and verified after reopening. An encrypted operator recovery copy is retained outside the repositories. No credentials belong in this document or the ZIP. The Apple and older OpenAI reviewer accounts were preserved.
-
-The demo must show the actual replacement tools and skill in ChatGPT. Rehearse workspace discovery, scheduled-content reads, media selection, analytics with honest missing-data handling, and draft-only creation followed by readback. Finish with an unsupported billing or account-connection request. Keep credentials and unrelated content off screen. Record the real interaction, verify playback, host it for reviewers and add its verified URL to `review.demo_recording_url` before rebuilding the submission ZIP.
-
-## Verification status
+## Verification and follow-up
 
 | Check | Status |
 | --- | --- |
-| Production backend transport and OAuth acceptance | Passed separately; see backend MCP release reference |
-| Existing production MCP discovery and workspace reads | Passed |
-| Five positive cases against the saved OpenAI 3.0.0 package | Not run |
-| Three negative cases against the saved OpenAI 3.0.0 package | Not run |
-| Reviewer sign-in and fixture prerequisites | Fresh production sign-in, single-workspace access, media, connected Facebook/Threads channels and analytics verified in Chrome; MCP review cases still not run |
-| Demo recording and reviewer-accessible URL | Existing unlisted recording plays; current-version coverage and full review remain outstanding |
-| Replacement Portal connection and tool scan | Existing 2.0.1 draft configured and authorized for Personal / Development read/write only; direct tools discovered, scan pending |
-| Developer legal/policy attestations | Must be completed by the authorized developer |
+| Production transport and OAuth | Stateless rollout and scoped authentication verified separately |
+| Portal connection | Authorized; domain verified; direct tools discovered |
+| Package skill checks | Passed in the Portal |
+| MCP scan | Latest scan did not complete; Portal requests a rescan |
+| Five positive and three negative review cases | Included in the package; not recorded as passed against the final uploaded version |
+| Reviewer access | Verified and supplied privately |
+| Developer attestations and submission | Completed by the owner; listing is in review |
+| Approval and publication | Pending |
 
-Source validation, uploading a draft, submitting for review and publishing an approved version are separate outcomes. An archive with missing review materials is a preparation artifact, not a submission-ready release.
+The supplied [unlisted demo](https://youtu.be/xpMgHQmJu_g) plays and is included in the package. It shows an earlier plugin workflow, not version 3.0.0. A current-version walkthrough and full recording review remain follow-ups.
+
+The terms inspected on 12 October limit accounts to Australia, New Zealand and the United States. The owner chose all-country targeting and will resolve that mismatch; it is not recorded as resolved.
+
+Resolve the incomplete scan and any reviewer feedback before publication. Do not cancel or replace the submitted version merely to update this record. Uploading, submitting and publishing are separate actions.

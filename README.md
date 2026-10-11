@@ -255,7 +255,7 @@ Claude Code:
 
 This repository is the maintained public source for the portable, Codex, and Claude plugin packages. Update the bundled skill under `skills/maeve-social-scheduler`, keep the marketplace and plugin manifests aligned when the version changes, then install the repository package locally and test it in a new conversation before publishing. Installed plugin caches are outputs and must not be edited as source.
 
-The hosted backend, this repository, and ChatGPT plugin metadata have separate release lifecycles. After a hosted MCP metadata change, refresh a developer-mode ChatGPT connection, confirm the advertised tool metadata, and start a new conversation. Published ChatGPT plugins use reviewed metadata snapshots, so updates require scanning the server, submitting a new version, and publishing the approved version. See the [official OpenAI connector refresh process](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata).
+Server deployment, repository publication and directory review are separate steps. See [directory status](docs/directory-status.md) for the current releases and outstanding reviews. After changing hosted MCP metadata, refresh the custom connection, check its tools, and start a new conversation. Package and listing changes follow the directory's review process; see the [OpenAI connector refresh guide](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata).
 
 ## Support and policies
 
