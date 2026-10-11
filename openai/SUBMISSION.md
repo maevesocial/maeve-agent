@@ -19,6 +19,8 @@ The owner supplied the existing unlisted recording at https://youtu.be/xpMgHQmJu
 
 Use a dedicated reviewer account with sample data and suitable plan access. It needs one review workspace, sample Media Room images, analytics access and a connected account supporting text-only drafts. Store credentials and login instructions only in secure Portal fields. Do not use a real customer's account or commit credentials here.
 
+The earlier production verification record identifies App Store Connect's Maeve Social App Review Information as the saved credential source for the dedicated Apple Review account. It was verified against production on 12 September. Recheck current sign-in and fixtures before reusing it for OpenAI. The environment archive's `DIRECTORY_ACCOUNT_PASSWORD` entries belong to another project; the old `MAEVE_TEST_*` mobile login is not established as this reviewer account.
+
 The demo must show the actual replacement tools and skill in ChatGPT. Rehearse workspace discovery, scheduled-content reads, media selection, analytics with honest missing-data handling, and draft-only creation followed by readback. Finish with an unsupported billing or account-connection request. Keep credentials and unrelated content off screen. Record the real interaction, verify playback, host it for reviewers and add its verified URL to `review.demo_recording_url` before rebuilding the submission ZIP.
 
 ## Verification status
