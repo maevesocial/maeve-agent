@@ -124,18 +124,21 @@ maeve tasks:checklist:delete --workspace <workspaceId> --id <taskId> --item <ite
 
 Task mutations require an Editor-or-higher workspace role. `tasks:delete` and `tasks:checklist:delete` require `--yes`; deleted tasks cannot be restored.
 
-Campaigns and strategy reads are general workspace context. Boost reads require a standard plan; the CLI exposes boost reads only, because boost writes spend ad budget.
+Campaigns and strategy reads are general workspace context. The `boosts:*` reads require a standard plan, and the CLI leaves the `/v1/boosts` writes off because they spend ad budget. Paid ads, including Meta boosts, run through the `ads:*` group, generated from the shared ads operations: `ads:meta:boosts:create` returns a pending approval and its review URL and creates nothing until the person approves on the Maeve review page; repeat the same request with the approval ID afterwards. `ads:meta:boosts:activate`, `:pause`, `:resume` and `:reconcile` manage a created boost, and `:cleanup` needs `--yes`. Use root `maeve --help` for the full `ads:*` list.
 
 Standard-plan reads:
 
 ```bash
 maeve content:pending-approval-count --workspace <workspaceId>
-maeve content:approval-history --workspace <workspaceId>
-maeve content:approval-history:client-batch --workspace <workspaceId> --batch <batchId>
-maeve content:approval-history:internal --workspace <workspaceId> --record <recordId>
-maeve content:history --workspace <workspaceId> --id <contentId>
-maeve client-reviews:open --workspace <workspaceId>
-maeve client-reviews:get --workspace <workspaceId> --batch <batchId>
+maeve approval-workflows:list --workspace <workspaceId>
+maeve reviews:list --workspace <workspaceId> --status active
+maeve reviews:inbox --workspace <workspaceId> --group your_turn
+maeve reviews:summary --workspace <workspaceId>
+maeve reviews:get --workspace <workspaceId> --review <reviewId>
+maeve reviews:history --workspace <workspaceId>
+maeve reviews:history:content --workspace <workspaceId> --content <contentId>
+maeve reviews:history:get --workspace <workspaceId> --review <reviewId>
+maeve reviews:items:activity --workspace <workspaceId> --review <reviewId> --item <itemId>
 ```
 
 ## Draft and low-risk mutations
@@ -292,35 +295,41 @@ Recurring series and occurrence IDs come from `recurringMetadata` on `content:li
 
 ## Approvals and client reviews
 
-Standard-plan commands:
+Team and client approval runs through staged reviews. A review holds ordered team or client stages and one item per content. Standard-plan commands:
 
 ```bash
-maeve content:comment --workspace <workspaceId> --id <contentId> --json comment.json
-maeve content:comment-attachments:init --workspace <workspaceId> --json attachment.json
-maeve content:comment-attachments:complete --workspace <workspaceId> --attachment <attachmentId>
-maeve content:comment-attachments:abort --workspace <workspaceId> --attachment <attachmentId>
-maeve content:activity:react --workspace <workspaceId> --activity <activityId> --json reaction.json
-maeve content:activity:unreact --workspace <workspaceId> --activity <activityId> --emoji thumbs-up
-maeve content:decision --workspace <workspaceId> --id <contentId> --json decision.json
-maeve content:withdraw --workspace <workspaceId> --id <contentId>
-maeve content:reopen-client-review --workspace <workspaceId> --id <contentId>
-maeve client-reviews:create --workspace <workspaceId> --json client-review.json
-maeve client-reviews:add-post --workspace <workspaceId> --batch <batchId> --json post-id.json
-maeve client-reviews:remove-post --workspace <workspaceId> --batch <batchId> --json post-id.json
-maeve client-reviews:cancel --workspace <workspaceId> --batch <batchId>
-maeve client-reviews:override --workspace <workspaceId> --batch <batchId> --json override.json
-maeve client-reviews:update-participant --workspace <workspaceId> --batch <batchId> --json participant.json
-maeve client-reviews:comment --workspace <workspaceId> --batch <batchId> --json comment.json
+maeve reviews:resolve --workspace <workspaceId> --json routing.json
+maeve reviews:preview --workspace <workspaceId> --json review.json
+maeve reviews:create --workspace <workspaceId> --json review.json
+maeve reviews:update --workspace <workspaceId> --review <reviewId> --json settings.json
+maeve reviews:stages --workspace <workspaceId> --review <reviewId> --json stages.json
+maeve reviews:items:add --workspace <workspaceId> --review <reviewId> --json item.json
+maeve reviews:items:react --workspace <workspaceId> --review <reviewId> --item <itemId> --activity <activityId> --json reaction.json
+maeve reviews:items:unreact --workspace <workspaceId> --review <reviewId> --item <itemId> --activity <activityId> --emoji thumbs-up
+maeve reviews:items:comment-attachments:init --workspace <workspaceId> --review <reviewId> --item <itemId> --json attachment.json
+maeve reviews:items:comment-attachments:complete --workspace <workspaceId> --review <reviewId> --item <itemId> --attachment <attachmentId>
+maeve reviews:items:comment-attachments:abort --workspace <workspaceId> --review <reviewId> --item <itemId> --attachment <attachmentId>
 ```
 
-CLI-enforced `--yes` because people may be notified:
+`reviews:resolve` previews which approval workflow each channel routes to. `reviews:update` and `reviews:stages` need the expected configuration revision from the latest read.
+
+CLI-enforced `--yes`, because people may be notified, a decision is recorded, or content may publish:
 
 ```bash
-maeve content:request-approval --workspace <workspaceId> --id <contentId> --json approval.json --yes
-maeve content:resubmit --workspace <workspaceId> --id <contentId> --json approval.json --yes
-maeve client-reviews:send --workspace <workspaceId> --batch <batchId> --yes
-maeve client-reviews:resend --workspace <workspaceId> --batch <batchId> --yes
+maeve reviews:create --workspace <workspaceId> --json review.json --yes
+maeve reviews:submit --workspace <workspaceId> --json submit.json --yes
+maeve reviews:send --workspace <workspaceId> --review <reviewId> --yes
+maeve reviews:remind --workspace <workspaceId> --review <reviewId> --json reminder.json --yes
+maeve reviews:cancel --workspace <workspaceId> --review <reviewId> --yes
+maeve reviews:items:remove --workspace <workspaceId> --review <reviewId> --item <itemId> --yes
+maeve reviews:items:comment --workspace <workspaceId> --review <reviewId> --item <itemId> --json comment.json --yes
+maeve reviews:items:decision --workspace <workspaceId> --review <reviewId> --item <itemId> --json decision.json --yes
+maeve reviews:items:decisions --workspace <workspaceId> --review <reviewId> --json decisions.json --yes
+maeve reviews:items:override --workspace <workspaceId> --review <reviewId> --item <itemId> --json override.json --yes
+maeve reviews:items:revoke --workspace <workspaceId> --review <reviewId> --item <itemId> --json revoke.json --yes
 ```
+
+`reviews:create` needs `--yes` only when the file sets `sendNow`. `reviews:submit` needs it only when an item's action is `submit` or `publish_now`, and takes an optional `--request-id` for safe retries.
 
 ## Analytics reports
 
@@ -410,14 +419,14 @@ Goal: handle publish-now, retry, scheduling reversal, provider-result resolution
 Goal: manage internal approval and client review work in standard-plan workspaces.
 
 1. Confirm the workspace has standard-plan access if commands fail with plan errors.
-2. Inspect pending work with `content:pending-approval-count`, `content:approval-history`, `content:history`, or client-review reads.
-3. Request or resubmit internal approval with `content:request-approval --yes` or `content:resubmit --yes` only after confirmation because people may be notified.
-4. Submit decisions with `content:decision --json`; include `reason` for rejection or override.
-5. Add comments or attachments with `content:comment`, `content:comment-attachments:init`, `complete`, or `abort`.
-6. Create client review batches with `client-reviews:create`.
-7. Add/remove posts, update participants, comment, override, or cancel as requested.
-8. Send/resend client reviews with `--yes` only after confirmation.
-9. Return content IDs, approval record IDs, batch IDs, reviewer impact, decision state, and next reviewer/client step.
+2. Inspect pending work with `content:pending-approval-count`, `reviews:inbox`, `reviews:list`, `reviews:get`, or the `reviews:history` reads.
+3. Find the workspace's routing with `approval-workflows:list`, and preview it with `reviews:resolve`.
+4. Create a review with team or client stages, or a workflow, using `reviews:create`. Add `sendNow` and `--yes` only after confirmation, because reviewers are notified. `reviews:submit` sends saved content through the routed workflow.
+5. Send a draft review with `reviews:send --yes`, remind waiting reviewers with `reviews:remind --yes`, or cancel with `reviews:cancel --yes`, each after confirmation.
+6. Add or remove items with `reviews:items:add` or `reviews:items:remove --yes`.
+7. Record decisions, overrides or revocations only when the user is the reviewer and asks for it, with `--yes`; include `reason` for rejection or override.
+8. Add comments or attachments with `reviews:items:comment --yes` and `reviews:items:comment-attachments:init`, `complete`, or `abort`.
+9. Return content IDs, review IDs, item IDs, reviewer impact, decision state, and the next reviewer or client step.
 
 ### Taxonomy and hashtags workflow
 

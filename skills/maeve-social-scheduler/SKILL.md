@@ -27,7 +27,7 @@ Report the affected IDs, workspace, destination and status, plus scheduled time 
 
 A queued response, sent status or provider ID is not proof of native visibility. When the task requires live verification, check the provider author, rendered content and resource identity separately. Supported provider deletion can retain the sent audit in Maeve.
 
-For a repeated create, retain successful IDs and reuse the identical payload and idempotency key. Inspect conflicts before changing input. Respect retry-after limits; do not switch connections or create replacement content to recover uncertain publishing outcomes. A lost MCP session requires fresh initialization and a fresh four-tool declaration, not activation or recreation of saved content.
+For a repeated create, retain successful IDs and reuse the identical payload and idempotency key. Inspect conflicts before changing input. Respect retry-after limits; do not switch connections or create replacement content to recover uncertain publishing outcomes. The MCP transport is stateless; reconnect through the client after a connection failure and continue from persisted Maeve IDs without rebuilding activation state.
 
 ## References
 

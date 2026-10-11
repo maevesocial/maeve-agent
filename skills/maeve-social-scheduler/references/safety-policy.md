@@ -32,8 +32,9 @@ Ensure the user has authorized the action and target before:
 - `content:publish`, `content:published-caption`, `content:retry`, `content:resolve-publishing-result`, `content:revert-to-draft`, `content:delete`.
 - `content:recurring-occurrence:cancel`, `content:recurring-series:cancel`.
 - `content:schedule` if the requested date/time/timezone or target integration is ambiguous.
-- `content:request-approval`, `content:resubmit`, `content:withdraw`, `content:reopen-client-review`.
-- `client-reviews:send`, `client-reviews:resend`, `client-reviews:cancel`, `client-reviews:override`.
+- `reviews:create` with `sendNow`, `reviews:submit`, `reviews:send`, `reviews:remind`, `reviews:cancel`, `reviews:items:remove`, `reviews:items:comment`, and any `reviews:items:decision`, `:decisions`, `:override` or `:revoke`.
+- MCP operation `review.request` when it sends a client stage at once, and `review.withdraw` or `review.remove_content` through `maeve_write`.
+- Paid ads changes and creation: `ads:*` writes and the matching `ads.*` MCP operations. Creation still needs the person's approval on the Maeve review page.
 - `inbox:reply`, `inbox:moderate`, `inbox:retry-message`, `inbox:delete-failed`, `inbox:read-all`, `inbox:resolve-all`, `inbox:tags:delete`.
 - MCP operation `inbox_automation.create_rule` with `enabled: true` requires `inbox_automation_enable:new:<integrationId>`. MCP operation `inbox_automation.update_rule` with `enabled: true` requires `inbox_automation_enable:<ruleId>`. Execute either through `maeve_write`. Neither action supports dangerous auto-confirm.
 - MCP operation `task.create_comment` through `maeve_write` when its content mentions workspace members.
@@ -52,15 +53,15 @@ The confirmation prompt should include action, IDs, workspace, integration, sche
 Only append `--yes` after confirmation for:
 
 - `content:create` when the payload has `intent: "publish_now"`
-- `content:request-approval`
-- `content:resubmit`
 - `content:publish`
 - `content:published-caption`
 - `content:resolve-publishing-result`
 - `content:recurring-occurrence:cancel`
 - `content:recurring-series:cancel`
-- `client-reviews:send`
-- `client-reviews:resend`
+- `reviews:create` when the file sets `sendNow`, and `reviews:submit` when an item's action is `submit` or `publish_now`
+- `reviews:send`, `reviews:remind`, `reviews:cancel`, `reviews:items:remove`, `reviews:items:comment`
+- `reviews:items:decision`, `reviews:items:decisions`, `reviews:items:override`, `reviews:items:revoke`
+- `ads:*` commands for platform deletion, such as `ads:linkedin:entities:delete`, `ads:meta:publications:cleanup`, `ads:meta:boosts:cleanup` and `ads:tiktok:entities:delete`
 - `campaigns:phases:delete`
 - `integrations:pinterest:create-board`
 - `calendar:notes:delete`
