@@ -1,6 +1,6 @@
 # Command reference
 
-Curated from the canonical `maeve-cli` 0.13.2 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
+Curated from the canonical `maeve-cli` 0.14.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
 
 ## Contents
 
