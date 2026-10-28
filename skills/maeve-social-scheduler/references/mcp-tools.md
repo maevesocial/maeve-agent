@@ -1,6 +1,6 @@
 # MCP operation catalog
 
-Use this reference for hosted MCP setup, operation discovery, execution, upload, batch recovery, and connection recovery. The hosted MCP server runs with the Maeve backend. CLI npm publication and the maintained plugin package are separate releases.
+Use this reference for hosted MCP setup, operation discovery, execution, upload, batch recovery, and connection recovery.
 
 ## Connection
 
@@ -30,7 +30,7 @@ Do not guess an operation schema from its canonical ID or from a CLI command. Se
 2. Keep the selected `workspaceId`, then search again with that workspace and the user's actual intent.
 3. Load `maeve_details` for the selected operation with the same workspace context.
 4. If details says `available: false`, report `unavailableReason` and do not attempt execution. Resolve required plan, platform, or account conditions instead.
-5. Execute through the returned `executor`, passing the canonical ID and an `input` object that matches the details schema exactly.
+5. Execute through the returned `executor`, passing the canonical ID and an `input` object that matches the details schema exactly. Put `workspaceId` inside `input`, not beside it.
 6. Follow returned `nextOperations` only when they advance the user's request. Load their details before execution.
 
 Search is bounded. Refine the query when `hasMore` is true or the desired operation is absent. An operation can remain hidden because of credential scope, toolset grants, organization policy, workspace access, role capability, plan, or platform support. Do not switch credentials to bypass that result.
@@ -53,13 +53,13 @@ These stable IDs are useful search targets. Details remains authoritative for th
 | Inbox automation                  | `inbox_automation.list_rules`, `inbox_automation.get_rule`, `inbox_automation.list_executions`                                                                                                                                                                                                  | `inbox_automation.create_rule`, `inbox_automation.update_rule`, `inbox_automation.delete_rule`                                                                                                                                                                                                                                                                                                     |
 | Paid ads                          | `ads.accounts.list`, `ads.capabilities.get`, then the `ads.*` reads for the account                                                                                                                                                                                                             | `ads.*` changes, drafts, campaign and boost creation, and recovery; creation waits for approval on the Maeve review page                                                                                                                                                                                                                                                                           |
 
-X Articles are long-form X posts. Create them with `articles.create`, not `content.create_draft`, on an X integration whose `content.canPublishArticles` is true. Upload images with `media.upload` first, then reference Media Room still images of 5 MB or less by ID: `coverMediaId` for the cover and `<img data-media-id="...">` in `bodyHtml` for inline images. Replace a body with `articles.update` and the `bodyVersion` from the latest `articles.get`; `POST_BODY_CHANGED` means someone changed it in Maeve, so read it again. Scheduled, in-review and published articles refuse edits with `ARTICLE_NOT_EDITABLE`. The returned `contentId` works with `content.schedule`, `content.publish_now`, `content.revert_to_draft`, `content.retry` and `content.delete`. `articles.send_to_x_drafts` makes a draft in the account's drafts on X instead of publishing; it needs an `idempotencyKey` and the exact confirmation, and X's API cannot delete that draft.
+X Articles are long-form X posts. Create them with `articles.create`, not `content.create_draft`, on an X integration whose `content.canPublishArticles` is true. Upload images with `media.upload` first, then reference Media Room still images of 5 MB or less by ID: `coverMediaId` for the cover and `<img data-media-id="...">` in `bodyHtml` for inline images. Replace a body with `articles.update`, sending the `bodyVersion` from the latest `articles.get` as `expectedBodyVersion`; `POST_BODY_CHANGED` means someone changed it in Maeve, so read it again. Scheduled, in-review and published articles refuse edits with `ARTICLE_NOT_EDITABLE`. The returned `contentId` works with `content.schedule`, `content.publish_now`, `content.revert_to_draft`, `content.retry` and `content.delete`. `articles.send_to_x_drafts` makes a draft in the account's drafts on X instead of publishing; it needs an `idempotencyKey` and the exact confirmation, and X's API cannot delete that draft.
 
 Strategy operations use the `strategy.*` namespace. Search for the requested Foundation, platform, Goal, Bet, prediction, progress, or Retro workflow instead of loading the whole namespace.
 
 `content.create_draft` can place new content directly on a table with `workbenchPageId` and optional `sortOrder`. If placement fails after creation, keep the returned `contentId` and finish with `workbench.content_table.add_row`; do not create replacement content. Row cell replacement and removal require the latest row `version`. Re-read after a stale-version conflict. Removing a row requires exact confirmation and leaves the content intact.
 
-Paid ads use the `ads.*` operations. Read `ads.accounts.list`, then `ads.capabilities.get` before anything else on that account. A campaign or boost creation request returns a pending approval and a review URL; share the URL, because only the person can approve it on the Maeve review page, and `ads.approvals.get` only reads its status.
+Paid ads use the `ads.*` operations. Read `ads.accounts.list`, then `ads.capabilities.get` before anything else on that account. A campaign or boost creation request returns a pending approval and a review URL; share the URL so the person can approve it on the Maeve review page, and `ads.approvals.get` only reads its status. When the response also has `chatConfirmation`, the workspace lets the person approve in chat: show them `approval.summary`, ask, and only after they agree send the same request again with the `approvalId` and that `chatConfirmation`. Starting delivery needs the exact `confirmationText` from details after the person agrees: `ads.campaigns.update_status` with `ENABLE`, `ads.meta.boosts.activate` and `resume`, `ads.tiktok.publications.activate`, `ads.linkedin.entities.update` with `confirmActivation: true`, and `ads.meta.ads.create` with `initialStatus: ACTIVE`. Show what will start delivering and its budget first. Platform deletes such as `ads.meta.entities.delete`, `ads.linkedin.entities.delete` and `ads.tiktok.entities.delete` also need the exact `confirmationText` and are never auto-confirmed.
 
 Live inbox messaging, approval decisions, ad account connection, billing, credentials, integration connect/disconnect, recurring cancellation, and PDF reports remain outside the MCP catalog. Use the CLI or public API only where they support the task and the user has authorized the effect.
 
@@ -90,19 +90,18 @@ If the current client cannot read the local file or make the PUT request, use `m
 
 `content.create_drafts` and `content.schedule_batch` accept up to 100 items. `media.upload_batch` and `media.complete_upload_batch` accept up to 50. Load details for the exact operation before constructing a batch.
 
-- Keep the batch `idempotencyKey`, item order, and payload unchanged for an identical replay.
+- The idempotency rule for repeated drafts is in [SKILL.md](../SKILL.md#results-and-recovery). A replay also keeps the item order unchanged, and reusing a key with changed input is a conflict.
 - Treat results independently by `index`. Retain every successful resource ID and per-item replay key even when neighbours fail.
 - Replaying the same key and manifest returns the recorded successes and failures. It does not make a failed item succeed or renew upload URLs.
-- Corrected input needs a new item or batch key. Reusing a key with changed input is a conflict.
 - Media upload batches still require one byte PUT per initialized item before completion.
-- Do not schedule or publish a draft batch merely to verify draft creation.
 
 ## Recovery
 
 - For validation errors, use `details.validationErrors`, correct only the rejected field, and preserve successful IDs.
+- Don't retry `plan_required`, `forbidden` or `not_found`. Report the plan, permission or missing resource instead.
 - For `rate_limited`, wait for `retryAfterSeconds` when present. Do not switch connections or create replacement content.
 - For conflict or uncertain mutation results, follow the operation's details retry contract. Read the affected resource before retrying an idempotent or unsafe write.
-- A queued publish is not a native publication. Do not retry or create replacement content while the provider outcome is uncertain.
+- Do not retry or create replacement content while a publishing outcome is uncertain.
 - The MCP transport is stateless. After a connection failure, reconnect through the client and continue from persisted Maeve IDs. The client handles discovery and any legacy initialization; no server session or activation state needs rebuilding. A connection failure does not erase saved content or media and does not prove that a write failed.
 - Authentication loss uses the client's reconnect flow. CLI login cannot repair MCP OAuth.
 
@@ -113,10 +112,3 @@ Report the affected IDs, workspace, integration or destination, status, and sche
 - Label an exact returned `appUrl` as **Open in Maeve**. Do not construct one from slugs or IDs.
 - After publication, read `content.get`. Label a non-null HTTPS `permalink` from that read as **View on platform**.
 - A null permalink is a valid result. Never synthesize a provider URL from `platformPostId`, a resource name, or prior URL patterns.
-- A queued response, sent status, or provider ID is not proof of native visibility. Verify the selected author, rendered content, and resource identity separately when the task requires it.
-
-## Distribution boundary
-
-The maintained public plugin source is the separate `maevesocial/maeve-agent` repository, with its skill under `skills/maeve-social-scheduler/`. The backend's mirrored skill is the application-maintained source for this repository only. Installed Codex, Claude, or ChatGPT plugin caches are deployment artifacts and must not be edited as source.
-
-Updating the backend server, this mirrored skill, the public plugin repository, and a ChatGPT connection are separate release steps. After a hosted MCP metadata change, refresh a custom ChatGPT connection, confirm the advertised metadata, and start a new conversation. Published plugins use continuous review for tool updates; changes to submitted plugin information or imported skills require a new version, review, and publication. See the [official OpenAI connector refresh process](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata).

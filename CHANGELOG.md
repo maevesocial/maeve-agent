@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.3
+
+- Match the canonical skill to the current server and `maeve-cli` 0.16.0, including the review request and decision shapes, reaction values and label group deletion.
+- Note that `content.create_draft` schedules when given `scheduledAt`, and that creating a Meta ad with `ACTIVE` status or deleting Meta ad entities needs confirmation.
+- Correct platform rules: LinkedIn accepts up to 20 attachments through MCP and the API, published caption edits cover Facebook, LinkedIn and LinkedIn Page, TikTok posts are always public, and Instagram product lookup is not available outside the app.
+- Explain times without an offset: MCP uses the workspace timezone, and the CLI and public API require an offset.
+- State each rule once and read platform settings from live capability fields instead of copied tables.
+
 ## 1.1.2
 
 - Explain stateless MCP reconnection and retain saved resource IDs when recovering uncertain writes.

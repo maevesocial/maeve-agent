@@ -10,8 +10,7 @@ Curated from the `maeve-cli` payload schemas. The CLI validates payloads strictl
 - Schedule Existing Content
 - Immediate Publish
 - Media
-- Approvals
-- Client Reviews
+- Reviews
 - Inbox
 - Grid Planner
 - Analytics Report
@@ -22,8 +21,9 @@ For platform-specific models and clearing behavior, read [Platform content](plat
 
 - Use UUID strings for workspace, integration, content, media, approver, batch, folder, label, pillar, format, campaign, and campaign phase IDs.
 - Grid planner IDs must be UUIDv4 strings.
-- Use ISO 8601 timestamps with explicit timezone for scheduling, for example `2026-05-01T10:00:00+10:00` or `2026-05-01T00:00:00Z`.
+- Scheduling times are ISO 8601. MCP reads a time without an offset, such as `2026-05-01T10:00:00`, in the workspace timezone that `workspace.list` returns. maeve-cli 0.16.0 and the public API reject a time without an offset, so add one there, for example `2026-05-01T10:00:00+10:00` or `2026-05-01T00:00:00Z`.
 - Upload local media through Maeve first, then attach it with `contentMedia[].mediaId`.
+- `contentMedia` accepts up to 20 attachments for `linkedin` and `linkedin-page` and up to 10 for every other platform. maeve-cli 0.16.0 still stops at 10 for every platform. Thread replies keep their own limit of 10 each. Apply the platform `maxMedia` from capabilities when it is lower.
 - Base content create/update targets one `integrationId` and one integration-scoped content row. Multi-platform composition should fan out to separate grouped rows.
 - For drafts, omit `intent` or include `intent: "draft"`.
 - `content:update` uses the create-content shape except `intent` and `scheduledAt`, and at least one field must be present. Use scheduling or revert-to-draft commands to change publication time.
@@ -98,8 +98,8 @@ Supported content fields:
 - `publishTitle`: optional provider-facing title, max 500 characters. Required before scheduling/publishing when capabilities say `requiresTitle`.
 - `notes`: optional rich-text HTML, max 100000 characters. Internal - never published. Use to attach planning context, links, or meeting notes to a content item.
 - `captions`: optional object with `canonical` publish text and optional platform overrides.
-- `contentMedia`: optional uploaded media relationships, max 10 before stricter platform limits.
-- `scheduledAt`: optional ISO 8601 with timezone.
+- `contentMedia`: optional uploaded media relationships, within the attachment limit in General rules.
+- `scheduledAt`: optional ISO 8601 time with an offset; see General rules.
 - `settings`: optional object for platform fields from capabilities.
 - `postType`: optional `post`, `reel`, `story`, `thread`, or `poll` (LinkedIn only; requires the top-level `poll` object).
 - `poll`: LinkedIn poll content, only with `postType: "poll"`. Question up to 140 characters, 2 to 4 options up to 30 characters each, `duration` of `ONE_DAY`, `THREE_DAYS`, `SEVEN_DAYS`, or `FOURTEEN_DAYS`, `voteSelectionType: "SINGLE_VOTE"`, `isVoterVisibleToAuthor: true`. Polls cannot carry media, documents, or article content.
@@ -188,11 +188,11 @@ Publishing uses an existing content ID, not a JSON payload:
 maeve content:publish --workspace <workspaceId> --id <contentId> --yes
 ```
 
-Confirm first because this is externally visible. The CLI requires `--yes` for publish-now.
+Confirm first because this is externally visible.
 
 ## Published caption edit
 
-This edits the provider caption for an already-published Facebook item:
+This replaces the live caption of an already-published Facebook, LinkedIn or LinkedIn Page root post when `allowedActions.canUpdatePublishedCaption` is true. On LinkedIn only the text changes, up to 3,000 characters:
 
 ```bash
 maeve content:published-caption --workspace <workspaceId> --id <contentId> --json published-caption.json --yes
@@ -202,11 +202,11 @@ Payload shape:
 
 ```json
 {
-  "message": "Updated Facebook caption"
+  "message": "Updated caption"
 }
 ```
 
-Confirm first because this changes externally visible provider content. The CLI requires `--yes`.
+Confirm first because this changes externally visible provider content.
 
 ## Media
 
@@ -271,42 +271,81 @@ Media constraints:
 - Bulk media IDs require 1 to 100 IDs.
 - Label ID lists require 1 to 50 IDs.
 
-## Approvals
+## Reviews
 
-Internal approval request:
+A review holds one item per content and ordered team or client stages. The CLI rejects unknown fields.
+
+Create a review with `reviews:create`. `sendNow: true` notifies the first stage:
 
 ```json
 {
-  "approverIds": ["00000000-0000-4000-8000-000000000001"],
-  "policy": "any"
+  "items": [{ "contentId": "00000000-0000-4000-8000-000000000001" }],
+  "stages": [
+    {
+      "kind": "team",
+      "rule": "any",
+      "deadlineDays": null,
+      "participants": [{ "userId": "00000000-0000-4000-8000-000000000002" }]
+    },
+    {
+      "kind": "client",
+      "rule": "all",
+      "deadlineDays": 3,
+      "participants": [{ "name": "Client Reviewer", "email": "reviewer@example.com" }]
+    }
+  ],
+  "label": "May launch",
+  "inviteNote": "Please review when you have a moment.",
+  "sendNow": false
 }
 ```
 
-Approval decision:
+- `kind` is `team` or `client`, `rule` is `any` or `all`, and `inOrder` is optional.
+- Team participants use member `userId` values from `workspaces:members`. Client participants use `name` and `email`.
+- Send `deadlineDays` on every stage, as a whole number of days or `null` for no reminder. The API rejects a stage without it.
+- `expiresAt` is optional and takes an ISO 8601 time with an offset.
+- `reviews:preview` takes `items` and optional `stages`. `reviews:items:add` takes `{ "contentId": "..." }`. `reviews:remind` takes optional `itemIds`.
+
+Decision for `reviews:items:decision`:
 
 ```json
 {
-  "decision": "reject",
-  "reason": "Please revise the CTA."
+  "decision": "changes_requested",
+  "reason": "Please revise the CTA.",
+  "expectedVersionId": "00000000-0000-4000-8000-000000000003",
+  "expectedStageId": "00000000-0000-4000-8000-000000000004",
+  "expectedConfigRevision": 2,
+  "mutationId": "00000000-0000-4000-8000-000000000005"
 }
 ```
 
-`decision` is `approve` or `reject`; `reason` is required when rejecting or using `override: true`.
+- `decision` is `approved` or `changes_requested`. `reason` is optional.
+- Read `reviews:get` first. `expectedVersionId` is the item's `currentVersionId`, `expectedStageId` is its `currentStageId`, and `expectedConfigRevision` is the review's `configRevision`.
+- Generate a new UUID as `mutationId` for each decision, and reuse it only to replay the same decision.
+- `reviews:items:decisions` takes `{ "decisions": [...] }` with the same fields plus `itemId`. `reviews:items:override` needs `reason` and the same expected fields. `reviews:items:revoke` also takes `decisionId` and optional `requestChanges`.
 
-Approval comment:
+Comment for `reviews:items:comment`:
 
 ```json
 {
+  "reviewItemId": "00000000-0000-4000-8000-000000000007",
+  "expectedVersionId": "00000000-0000-4000-8000-000000000003",
+  "audience": "team",
   "body": "Looks good to me."
 }
 ```
+
+`audience` is `team` or `client`. Include `body` or `attachmentId`.
 
 Comment attachment init:
 
 ```json
 {
   "contentId": "00000000-0000-4000-8000-000000000001",
-  "audience": "internal",
+  "reviewId": "00000000-0000-4000-8000-000000000006",
+  "reviewItemId": "00000000-0000-4000-8000-000000000007",
+  "expectedVersionId": "00000000-0000-4000-8000-000000000003",
+  "audience": "team",
   "filename": "feedback.png",
   "contentType": "image/png",
   "fileSize": 123456
@@ -315,66 +354,13 @@ Comment attachment init:
 
 Allowed attachment content types: `image/jpeg`, `image/png`, `image/gif`, `image/webp`.
 
-Reaction:
+Reaction for `reviews:items:react`:
 
 ```json
-{ "emoji": "thumbs-up" }
+{ "emoji": "👍" }
 ```
 
-## Client reviews
-
-Client-only review batch:
-
-```json
-{
-  "contentIds": ["00000000-0000-4000-8000-000000000001"],
-  "workflowMode": "client",
-  "client": {
-    "reviewers": [{ "name": "Client Reviewer", "email": "reviewer@example.com" }],
-    "policy": "all",
-    "inviteNote": "Please review when you have a moment.",
-    "batchLabel": "May launch"
-  }
-}
-```
-
-Internal then client review:
-
-```json
-{
-  "contentIds": ["00000000-0000-4000-8000-000000000001"],
-  "workflowMode": "internal_client",
-  "internal": {
-    "approverIds": ["00000000-0000-4000-8000-000000000002"],
-    "policy": "any"
-  },
-  "client": {
-    "reviewers": [{ "name": "Client Reviewer", "email": "reviewer@example.com" }],
-    "policy": "all"
-  }
-}
-```
-
-Other client-review payloads:
-
-```json
-{ "contentId": "00000000-0000-4000-8000-000000000001" }
-```
-
-```json
-{
-  "contentId": "00000000-0000-4000-8000-000000000001",
-  "reason": "Approved outside the portal."
-}
-```
-
-```json
-{
-  "participantId": "00000000-0000-4000-8000-000000000001",
-  "email": "reviewer@example.com",
-  "name": "Updated Name"
-}
-```
+`emoji` is one of 👍, ❤️, 😂, 🎉 or 👀. `reviews:items:unreact --emoji` takes the same character.
 
 ## Inbox
 

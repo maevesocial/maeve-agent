@@ -34,7 +34,7 @@ Ensure the user has authorized the action and target before:
 - `content:schedule` if the requested date/time/timezone or target integration is ambiguous.
 - `reviews:create` with `sendNow`, `reviews:submit`, `reviews:send`, `reviews:remind`, `reviews:cancel`, `reviews:items:remove`, `reviews:items:comment`, and any `reviews:items:decision`, `:decisions`, `:override` or `:revoke`.
 - MCP operation `review.request` when it sends a client stage at once, and `review.withdraw` or `review.remove_content` through `maeve_write`.
-- Paid ads changes and creation: `ads:*` writes and the matching `ads.*` MCP operations. Creation still needs the person's approval on the Maeve review page.
+- Paid ads changes and creation: `ads:*` writes and the matching `ads.*` MCP operations. Creation still needs the person's approval on the Maeve review page, or their agreement in chat where the response offers `chatConfirmation`.
 - `inbox:reply`, `inbox:moderate`, `inbox:retry-message`, `inbox:delete-failed`, `inbox:read-all`, `inbox:resolve-all`, `inbox:tags:delete`.
 - MCP operation `inbox_automation.create_rule` with `enabled: true` requires `inbox_automation_enable:new:<integrationId>`. MCP operation `inbox_automation.update_rule` with `enabled: true` requires `inbox_automation_enable:<ruleId>`. Execute either through `maeve_write`. Neither action supports dangerous auto-confirm.
 - MCP operation `task.create_comment` through `maeve_write` when its content mentions workspace members.
@@ -50,7 +50,7 @@ The confirmation prompt should include action, IDs, workspace, integration, sche
 
 ## CLI-enforced `--yes`
 
-Only append `--yes` after confirmation for:
+This is the complete list of commands that need `--yes`. Only append it after confirmation for:
 
 - `content:create` when the payload has `intent: "publish_now"`
 - `content:publish`
@@ -61,7 +61,9 @@ Only append `--yes` after confirmation for:
 - `reviews:create` when the file sets `sendNow`, and `reviews:submit` when an item's action is `submit` or `publish_now`
 - `reviews:send`, `reviews:remind`, `reviews:cancel`, `reviews:items:remove`, `reviews:items:comment`
 - `reviews:items:decision`, `reviews:items:decisions`, `reviews:items:override`, `reviews:items:revoke`
-- `ads:*` commands for platform deletion, such as `ads:linkedin:entities:delete`, `ads:meta:publications:cleanup`, `ads:meta:boosts:cleanup` and `ads:tiktok:entities:delete`
+- `ads:*` commands for platform deletion, such as `ads:linkedin:entities:delete`, `ads:meta:entities:delete`, `ads:meta:publications:cleanup`, `ads:meta:boosts:cleanup` and `ads:tiktok:entities:delete`
+- `ads:*` changes that start delivery: `ads:campaigns:status` with `ENABLE`, `ads:meta:boosts:activate`, `ads:meta:boosts:resume`, `ads:tiktok:publications:activate`, `ads:linkedin:entities:update` with `confirmActivation: true`, and `ads:meta:ads:create` with `initialStatus` `ACTIVE`
+- `articles:send-to-x-drafts`, because X's API cannot delete the draft it makes
 - `campaigns:phases:delete`
 - `integrations:pinterest:create-board`
 - `calendar:notes:delete`
@@ -84,13 +86,14 @@ Only append `--yes` after confirmation for:
 - `tasks:checklist:delete`
 - `grid:delete`
 - `grid:promote`
+- `workbench:rows:remove`
 
 Some risky commands do not require `--yes`; the agent still must confirm them.
 
 ## Credential handling
 
 - Prefer `MAEVE_API_KEY` and `MAEVE_API_URL` environment variables for automation.
-- For hosted MCP, prefer the MCP client's browser authentication flow. Browser-authenticated MCP has been validated with Codex and Claude Code.
+- For hosted MCP, prefer the MCP client's browser authentication flow.
 - Use `MAEVE_API_KEY` for MCP only when browser authentication is not supported or for server-side automation.
 - Do not use stored browser CLI tokens as the MCP auth path.
 - Browser-approved MCP grants can be revoked in Maeve **Settings -> Developer**.

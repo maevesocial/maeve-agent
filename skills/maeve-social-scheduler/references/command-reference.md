@@ -1,6 +1,6 @@
 # Command reference
 
-Curated from the canonical `maeve-cli` 0.14.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
+Curated from the canonical `maeve-cli` 0.16.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
 
 ## Contents
 
@@ -30,7 +30,7 @@ maeve integrations:capabilities --workspace <workspaceId> --integration <integra
 maeve integrations:options --workspace <workspaceId> --integration <integrationId> --key <optionKey>
 ```
 
-Use MCP `integrations.get_options` through `maeve_read` when connected. Use CLI `integrations:options --json <file>` as the fallback when the option key needs input, such as YouTube region, location search, or Instagram catalog/product search.
+Use MCP `integrations.get_options` through `maeve_read` when connected. Use CLI `integrations:options --json <file>` as the fallback when the option key needs input, such as YouTube region, location search, Instagram audio search or the TikTok music chart.
 
 ## Safe reads
 
@@ -122,9 +122,23 @@ maeve tasks:checklist:move --workspace <workspaceId> --id <taskId> --item <itemI
 maeve tasks:checklist:delete --workspace <workspaceId> --id <taskId> --item <itemId> --yes
 ```
 
-Task mutations require an Editor-or-higher workspace role. `tasks:delete` and `tasks:checklist:delete` require `--yes`; deleted tasks cannot be restored.
+Task mutations require an Editor-or-higher workspace role. Deleted tasks cannot be restored.
 
-Campaigns and strategy reads are general workspace context. The `boosts:*` reads require a standard plan, and the CLI leaves the `/v1/boosts` writes off because they spend ad budget. Paid ads, including Meta boosts, run through the `ads:*` group, generated from the shared ads operations: `ads:meta:boosts:create` returns a pending approval and its review URL and creates nothing until the person approves on the Maeve review page; repeat the same request with the approval ID afterwards. `ads:meta:boosts:activate`, `:pause`, `:resume` and `:reconcile` manage a created boost, and `:cleanup` needs `--yes`. Use root `maeve --help` for the full `ads:*` list.
+Workbench pages and content tables:
+
+```bash
+maeve workbench:pages:list --workspace <workspaceId> --type content_table
+maeve workbench:pages:get --workspace <workspaceId> --page <pageId>
+maeve workbench:rows:list --workspace <workspaceId> --page <pageId> --limit 50
+maeve workbench:pages:create --workspace <workspaceId> --title "October"
+maeve workbench:rows:add --workspace <workspaceId> --page <pageId> --post <postId>
+maeve workbench:rows:set-cells --workspace <workspaceId> --page <pageId> --row <placementId> --expected-version <version> --json cells.json
+maeve workbench:rows:remove --workspace <workspaceId> --page <pageId> --row <placementId> --expected-version <version> --yes
+```
+
+Workbench commands need `maeve-cli` 0.16.0 or later; check root `maeve --help`. Writes require Workbench manage access. `workbench:pages:create` always creates a content table. Row writes take the row `version` from the latest `workbench:rows:list`; on a 409, list again and resend with the new version. `workbench:rows:set-cells` replaces the whole cell map keyed by column ID from `workbench:pages:get`. `workbench:rows:remove` cannot be undone and keeps the post.
+
+Campaigns and strategy reads are general workspace context. The `boosts:*` reads require the Basic plan, and the CLI leaves the `/v1/boosts` writes off because they spend ad budget. Paid ads, including Meta boosts, run through the `ads:*` group, generated from the shared ads operations: `ads:meta:boosts:create` returns a pending approval and its review URL and creates nothing until the person approves on the Maeve review page; repeat the same request with the approval ID afterwards. `ads:meta:boosts:activate`, `:pause`, `:resume`, `:reconcile` and `:cleanup` manage a created boost. Use root `maeve --help` for the full `ads:*` list.
 
 Standard-plan reads:
 
@@ -216,6 +230,7 @@ These need explicit user intent. Scheduling also needs date, time, and timezone:
 ```bash
 maeve content:schedule --workspace <workspaceId> --id <contentId> --scheduled-at "2026-05-01T10:00:00+10:00"
 maeve content:intended-time --workspace <workspaceId> --id <contentId> --scheduled-at "2026-05-01T10:00:00+10:00"
+maeve content:intended-time --workspace <workspaceId> --id <contentId> --clear
 maeve content:publish --workspace <workspaceId> --id <contentId> --yes
 maeve content:published-caption --workspace <workspaceId> --id <contentId> --json published-caption.json --yes
 maeve content:retry --workspace <workspaceId> --id <contentId>
@@ -224,9 +239,9 @@ maeve content:revert-to-draft --workspace <workspaceId> --id <contentId>
 maeve articles:send-to-x-drafts --workspace <workspaceId> --id <contentId> --yes
 ```
 
-`articles:send-to-x-drafts` writes a draft to the account's X drafts, which X's API cannot delete, so it requires `--yes`. Article bodies are HTML files whose images reference Media Room IDs; see the X section of [platform-content.md](platform-content.md).
+`articles:send-to-x-drafts` writes a draft to the account's X drafts, which X's API cannot delete. Article bodies are HTML files whose images reference Media Room IDs; see the X section of [platform-content.md](platform-content.md).
 
-`content:create` requires CLI `--yes` when the payload has `intent: "publish_now"`. `content:publish` requires CLI `--yes`. `content:published-caption` requires CLI `--yes` because it edits already-published provider content. `content:resolve-publishing-result` requires CLI `--yes` and records only an outcome already verified on the connected platform; it does not publish or retry. `content:retry` does not require `--yes` in the CLI, but agents should still confirm because it can publish externally. `content:revert-to-draft` cancels scheduling for every scheduled edition of the same root; use its optional JSON scope preconditions when the affected editions need to be fixed explicitly.
+[safety-policy.md](safety-policy.md#cli-enforced---yes) lists every command that needs `--yes`. `content:published-caption` edits already-published provider content. `content:resolve-publishing-result` records only an outcome already verified on the connected platform; it does not publish or retry. `content:retry` can publish externally, so confirm it even though the CLI does not ask for `--yes`. `content:revert-to-draft` cancels scheduling for every scheduled edition of the same root; use its optional JSON scope preconditions when the affected editions need to be fixed explicitly. `content:schedule` and `content:intended-time` take the same optional `--json` preconditions, and `--clear` instead of `--scheduled-at` removes the time. `content:schedule`, `content:publish` and `content:retry` send an idempotency key; after a timeout, retry with the same `--idempotency-key` so the action runs once.
 
 ## Destructive or broad actions
 
@@ -256,19 +271,6 @@ maeve inbox:resolve-message --workspace <workspaceId> --message <messageId>
 maeve inbox:reopen-message --workspace <workspaceId> --message <messageId>
 maeve grid:reorder --workspace <workspaceId> --json grid-reorder.json
 maeve grid:remove-cover --workspace <workspaceId> --item <itemId>
-```
-
-Content, campaigns, inbox tags and tasks have delete commands with no CLI restore path. Media uses a separate lifecycle: `media:delete` and `media:bulk-delete` move items to the Bin, `media:restore` and `media:bulk-restore` bring them back, and the permanent-delete commands remove binned media irreversibly.
-
-`media:label-groups:delete` takes `{ "mode": "archive-labels" }` or `{ "mode": "ungroup-labels" }` to say what happens to the labels in the group.
-
-CLI-enforced `--yes`:
-
-```bash
-maeve content:publish --workspace <workspaceId> --id <contentId> --yes
-maeve content:published-caption --workspace <workspaceId> --id <contentId> --json published-caption.json --yes
-maeve content:resolve-publishing-result --workspace <workspaceId> --id <contentId> --json publishing-result.json --yes
-maeve integrations:pinterest:create-board --workspace <workspaceId> --integration <integrationId> --json pinterest-board.json --yes
 maeve media:bulk-delete --workspace <workspaceId> --json media-ids.json --yes
 maeve media:delete-permanent --workspace <workspaceId> --id <mediaId> --yes
 maeve media:bulk-delete-forever --workspace <workspaceId> --json media-ids.json --yes
@@ -291,6 +293,12 @@ maeve grid:delete --workspace <workspaceId> --item <itemId> --yes
 maeve grid:promote --workspace <workspaceId> --item <itemId> --json grid-promote.json --yes
 ```
 
+Commands shown with `--yes` need it; [safety-policy.md](safety-policy.md#cli-enforced---yes) has the complete list.
+
+Content, campaigns, inbox tags and tasks have delete commands with no CLI restore path. Media uses a separate lifecycle: `media:delete` and `media:bulk-delete` move items to the Bin, `media:restore` and `media:bulk-restore` bring them back, and the permanent-delete commands remove binned media irreversibly.
+
+`media:label-groups:delete` takes `{ "mode": "delete-labels" }` or `{ "mode": "ungroup-labels" }` to say what happens to the labels in the group.
+
 Recurring series and occurrence IDs come from `recurringMetadata` on `content:list`. Cancelling a series removes every not-yet-published occurrence from the effective occurrence forward.
 
 ## Approvals and client reviews
@@ -305,7 +313,7 @@ maeve reviews:update --workspace <workspaceId> --review <reviewId> --json settin
 maeve reviews:stages --workspace <workspaceId> --review <reviewId> --json stages.json
 maeve reviews:items:add --workspace <workspaceId> --review <reviewId> --json item.json
 maeve reviews:items:react --workspace <workspaceId> --review <reviewId> --item <itemId> --activity <activityId> --json reaction.json
-maeve reviews:items:unreact --workspace <workspaceId> --review <reviewId> --item <itemId> --activity <activityId> --emoji thumbs-up
+maeve reviews:items:unreact --workspace <workspaceId> --review <reviewId> --item <itemId> --activity <activityId> --emoji 👍
 maeve reviews:items:comment-attachments:init --workspace <workspaceId> --review <reviewId> --item <itemId> --json attachment.json
 maeve reviews:items:comment-attachments:complete --workspace <workspaceId> --review <reviewId> --item <itemId> --attachment <attachmentId>
 maeve reviews:items:comment-attachments:abort --workspace <workspaceId> --review <reviewId> --item <itemId> --attachment <attachmentId>
@@ -313,7 +321,7 @@ maeve reviews:items:comment-attachments:abort --workspace <workspaceId> --review
 
 `reviews:resolve` previews which approval workflow each channel routes to. `reviews:update` and `reviews:stages` need the expected configuration revision from the latest read.
 
-CLI-enforced `--yes`, because people may be notified, a decision is recorded, or content may publish:
+These may notify people, record a decision or publish content, so confirm first:
 
 ```bash
 maeve reviews:create --workspace <workspaceId> --json review.json --yes
@@ -329,11 +337,11 @@ maeve reviews:items:override --workspace <workspaceId> --review <reviewId> --ite
 maeve reviews:items:revoke --workspace <workspaceId> --review <reviewId> --item <itemId> --json revoke.json --yes
 ```
 
-`reviews:create` needs `--yes` only when the file sets `sendNow`. `reviews:submit` needs it only when an item's action is `submit` or `publish_now`, and takes an optional `--request-id` for safe retries.
+`reviews:submit` takes an optional `--request-id` for safe retries. [safety-policy.md](safety-policy.md#cli-enforced---yes) says when `reviews:create` and `reviews:submit` need `--yes`. Review payload shapes are in [content-payloads.md](content-payloads.md#reviews).
 
 ## Analytics reports
 
-Analytics reads are safe. PDF generation is standard-plan only and requires `--yes`:
+Analytics reads are safe. PDF generation needs the Standard plan:
 
 ```bash
 maeve analytics:report --workspace <workspaceId> --provider instagram --json analytics-report.json --output report.pdf --yes
@@ -407,12 +415,12 @@ Goal: handle publish-now, retry, scheduling reversal, provider-result resolution
 1. Read the content with `content:get`.
 2. Confirm workspace, integration, content ID, current status, and desired action.
 3. For publish-now, confirm explicit current-task intent, then run `content:publish --yes`.
-4. For published Facebook caption edits, confirm the exact content ID and new caption, then run `content:published-caption --yes`.
+4. For published caption edits on Facebook, LinkedIn or LinkedIn Page, check `allowedActions.canUpdatePublishedCaption`, confirm the exact content ID and new caption, then run `content:published-caption --yes`.
 5. For retry, confirm external retry intent, then run `content:retry`.
 6. For scheduling reversal, inspect every scheduled edition in the root before running `content:revert-to-draft`.
 7. Record an uncertain provider outcome with `content:resolve-publishing-result --yes` only after independently verifying it.
 8. For delete, confirm the exact content ID and effect before running `content:delete`.
-9. Return resulting status or deletion marker, content ID, workspace, integration, the returned `appUrl`, and any provider error. A publish-now response is queued, not confirmed sent. Only label a later non-null HTTPS `permalink` from `content:get` as **View on platform**.
+9. Return resulting status or deletion marker, content ID, workspace, integration, the returned `appUrl`, and any provider error. Only label a later non-null HTTPS `permalink` from `content:get` as **View on platform**.
 
 ### Approval workflow
 
@@ -496,6 +504,16 @@ Goal: manage visual planning items and promote them to content drafts.
 8. Promote to a content draft with `grid:promote --yes` only after confirmation.
 9. Delete with `grid:delete --yes` only after confirmation.
 10. Return item IDs, integration ID, media IDs, linked content ID, order changes, promoted draft ID if present, and next planning step.
+
+### Workbench workflow
+
+Goal: put content on a Workbench content table, such as a monthly plan.
+
+1. Find the table with `workbench:pages:list --type content_table` and match it by title. If none fits, ask before creating one with `workbench:pages:create`.
+2. Find the root post with `content:roots:list`, then add it with `workbench:rows:add --page <pageId> --post <postId>`. Use the root `postId`, not the content ID from `content:create`. A post can be on a table once.
+3. To fill custom columns, read column IDs with `workbench:pages:get` and the row version with `workbench:rows:list`, then send the complete map with `workbench:rows:set-cells`.
+4. Remove a row with `workbench:rows:remove --yes` only after confirmation.
+5. Return the page ID, row (placement) IDs, post IDs, and the new row versions.
 
 ## Common sequences
 

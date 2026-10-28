@@ -94,7 +94,7 @@ Common fixes:
 - Include at least one field for update payloads.
 - For create content, include `integrationId` and at least one useful draft field such as `captions.canonical`, `internalTitle`, `publishTitle`, or `contentMedia`.
 - Keep `captions.canonical` and caption overrides at or below 25000 characters.
-- Use `contentMedia` for content attachments. Keep it to 10 or fewer items before applying stricter platform `maxMedia` from capabilities.
+- Use `contentMedia` for content attachments, within the [attachment limit](content-payloads.md#general-rules) and the platform `maxMedia` from capabilities.
 - For approval/client-review comments, include `body` or `attachmentId`.
 - For inbox replies, include `content` or `attachment`.
 - For grid create, include `mediaIds` for `visual_only` or `linkedContentId` for `linked_post`.
@@ -102,13 +102,13 @@ Common fixes:
 
 ## Timezone errors
 
-`scheduledAt` must be ISO 8601 with an explicit timezone:
+maeve-cli 0.16.0 and the public API reject a `scheduledAt` without an offset; MCP reads it in the workspace timezone. Add an offset such as `+10:00` or UTC `Z`:
 
 ```json
 { "scheduledAt": "2026-05-01T10:00:00+10:00" }
 ```
 
-Valid examples include offsets like `+10:00` and UTC `Z`. Do not use vague dates such as "tomorrow morning" in payloads.
+See [content-payloads.md](content-payloads.md#general-rules) for the full rule. Do not use vague dates such as "tomorrow morning" in payloads.
 
 ## Platform requirement errors
 
@@ -132,21 +132,21 @@ Known strict cases:
 
 - Pinterest requires media, `publishTitle`, and `settings.boardId`. Video pins also require a cover: pass `contentMedia[].cover.coverMediaId`, or use a video uploaded through the app (app uploads get a stored thumbnail; CLI/API uploads do not).
 - YouTube requires one video and `publishTitle`.
-- TikTok requires media and `settings.privacy_level` from `tiktok-creator-info`. `publishTitle` is optional.
+- TikTok requires media and every post publishes publicly. `publishTitle` is optional.
 
 Provider behavior confirmed in live testing (2026-08-18):
 
 - X rejects a post whose text matches a recent post with 403 "duplicate content". Text-only threads with identical messages always trip this; vary the text per message.
 - Instagram rejects an unresolvable `audio_id` with subcode 2207065 and the misleading message "audio_id is not a valid parameter for the media type, REELS". It usually means the audio ID does not exist; source IDs from the `instagram-audio` option key.
 - Pinterest rejects production pins to Sandbox boards with provider code 15, and the boards listing does not identify Sandbox boards. If a pin fails this way, choose a different board.
-- Read `platformPostId`, reply identities and `permalink` from MCP operation `content.get` through `maeve_read` after publishing. Link availability differs by provider and can remain null; do not promise that the next analytics sync will populate it. A queued response, `sent` state or saved provider ID alone does not prove native visibility. TikTok `deliveryMode: tiktok_drafts` still requires publication in the TikTok app. Google Offer owner status can say Published before a public card is visible.
+- Read `platformPostId`, reply identities and `permalink` from MCP operation `content.get` through `maeve_read` after publishing. Link availability differs by provider and can remain null; do not promise that the next analytics sync will populate it. TikTok `deliveryMode: tiktok_drafts` still requires publication in the TikTok app. Google Offer owner status can say Published before a public card is visible.
 - Instagram requires media.
 
 ## Plan or role errors
 
-Approval history, client reviews, approval decisions/comments, pending approval counts, boosts, and analytics PDF reports require a standard workspace plan and specific roles.
+Approval history, client reviews, approval decisions and comments, pending approval counts, and analytics PDF reports require the Standard plan. Boosts and paid ads require the Basic plan, except the TikTok publication reads, reconcile and pause that keep recovery open. Each also needs a workspace role that allows it.
 
-If the command says it requires a plan or the role is denied, report the plan/role blocker and do not retry with different payloads unless the user changes workspace/account.
+Don't retry `plan_required`, `forbidden` or `not_found`. Report the plan, role or missing resource, and do not retry with different payloads unless the user changes workspace or account.
 
 ## Rate limits and provider errors
 
