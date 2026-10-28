@@ -2,6 +2,18 @@
 
 Use this policy before Maeve mutations. Authorization already given for the same action, targets and external effect remains valid. Ask only when it is missing or those details change.
 
+## Contents
+
+- Default policy
+- Non-negotiable agent rules
+- Confirmation required
+- CLI-enforced `--yes`
+- Credential handling
+- External visibility
+- Generated media
+- Bulk actions
+- Mutation output
+
 ## Default policy
 
 - Prefer drafts. Omit `intent` or set `intent: "draft"` for new content unless the user explicitly asks to schedule or publish.

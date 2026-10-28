@@ -2,6 +2,17 @@
 
 Use this reference for hosted MCP setup, operation discovery, execution, upload, batch recovery, and connection recovery.
 
+## Contents
+
+- Connection
+- Four-tool surface
+- Common operation IDs
+- Confirmation
+- Upload sequence
+- Batch operations
+- Recovery
+- Returned links
+
 ## Connection
 
 - Prefer the MCP client's own browser connection. Claude Code: run `/mcp`, choose `maeve`, and approve Maeve in the browser. Codex: run `codex mcp login maeve` and approve Maeve in the browser. Other clients: use their **Authenticate** action.
