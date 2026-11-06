@@ -72,7 +72,7 @@ Provider behavior confirmed in live testing (2026-08-18):
 
 ## Plan or role errors
 
-Approval history, client reviews, approval decisions/comments, pending approval counts, boosts, and analytics PDF reports require a standard workspace plan and specific roles.
+Approval history, client reviews, approval decisions/comments, pending approval counts, and analytics PDF reports require a standard workspace plan and specific roles.
 
 Report `plan_required`, `forbidden` or `not_found` and do not retry. If an operation is unavailable, explain the limitation and direct the user to Maeve.
 
