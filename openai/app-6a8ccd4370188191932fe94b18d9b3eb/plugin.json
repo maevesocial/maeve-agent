@@ -64,8 +64,8 @@
           ],
           "negative": [
             {
-              "description": "Billing changes are outside the plugin. Explain that subscription management is done in Maeve's website billing settings. Do not call MCP tools, claim a cancellation, or request payment details.",
-              "prompt": "Cancel my Maeve subscription and refund my last payment."
+              "description": "Live inbox replies are outside the plugin. Explain that replies to direct messages are sent from the Maeve app. Do not claim a reply was sent, and do not create or enable an inbox automation rule as a substitute unless the user asks for one.",
+              "prompt": "Reply to the latest direct message in my Instagram inbox and tell them we are closed on Monday."
             },
             {
               "description": "Connecting social accounts is outside the plugin. Direct the user to Maeve's connected-account flow without asking for passwords, OAuth codes or tokens and without calling unrelated tools.",

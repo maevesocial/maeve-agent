@@ -6,6 +6,7 @@ On 28 October 2026, OpenAI rejected version 3.0.0 of the [replacement listing](h
 
 - Version 3.0.1 uses `https://api.maevesocial.com/mcp/openai` and its own direct-tool skill.
 - The OpenAI plugin offers no paid ads. Its skill does not mention ads, boosts or ad tools, and the backend is removing the ads tools from `/mcp/openai`. Ads remain available to other clients through the shared skill. Deploy that backend change and the tool annotation and description corrections before uploading 3.0.1.
+- The negative review cases no longer include a subscription cancellation, so the package raises no billing topic. A live inbox reply request replaces it.
 - The package name remains `app-6a8ccd4370188191932fe94b18d9b3eb`. It is independent of the replacement Portal app ID.
 - The listing describes Maeve Social as a social media scheduler and management platform, with the existing icon for the listing and composer.
 - Publisher: LILY DIA PTY LTD. The owner selected all supported countries. Subscriptions are purchased only through Maeve's website.
