@@ -104,7 +104,8 @@ Supported content fields:
 - `postType`: optional `post`, `reel`, `story`, `thread`, or `poll` (LinkedIn only; requires the top-level `poll` object).
 - `poll`: LinkedIn poll content, only with `postType: "poll"`. Question up to 140 characters, 2 to 4 options up to 30 characters each, `duration` of `ONE_DAY`, `THREE_DAYS`, `SEVEN_DAYS`, or `FOURTEEN_DAYS`, `voteSelectionType: "SINGLE_VOTE"`, `isVoterVisibleToAuthor: true`. Polls cannot carry media, documents, or article content.
 - `firstComment`, `shareToFeed`: optional publish behavior fields.
-- `contentMedia[].crops`, `contentMedia[].userTags`, `contentMedia[].productTags`, `contentMedia[].cover.coverMediaId`, `contentMedia[].cover.thumbOffsetMs`: optional media metadata where platform capabilities allow it.
+- `contentMedia[].crops`, `contentMedia[].userTags`, `contentMedia[].productTags`: optional media metadata where platform capabilities allow it.
+- `contentMedia[0].cover`: a video's cover, `{ "coverMediaId": "<image media id>" }`, `{ "thumbOffsetMs": 2500 }`, both (the image wins), or `null` to clear it. Saving rejects a `coverMediaId` that is not an image in the workspace and a `thumbOffsetMs` past the end of a video whose duration is known. The integration's `videoCover` capability says where it applies.
 - `threadMessages`: optional array for thread-style content, max 20 items.
 - `pillarIds`, `formatIds`, `labelIds`: optional UUID arrays.
 - `campaignId`, `campaignPhaseId`: optional campaign UUIDs; use `null` to clear campaign links on update.

@@ -75,8 +75,10 @@ Use `contentMedia` for per-media metadata:
 - `contentMedia[].crops`: optional crop data keyed by platform.
 - `contentMedia[].userTags`: optional user tags where supported.
 - `contentMedia[].productTags`: optional product tags where supported.
-- `contentMedia[].cover.coverMediaId`: optional uploaded media ID for a cover/thumbnail where supported.
-- `contentMedia[].cover.thumbOffsetMs`: optional thumbnail offset; provider execution maps this to platform API fields.
+- `contentMedia[0].cover.coverMediaId`: optional Media Room image for a video's cover (JPEG, PNG or WebP; Maeve converts it per platform).
+- `contentMedia[0].cover.thumbOffsetMs`: optional frame of the video, in milliseconds from the start; it must be within the video. When both are set, the image wins.
+
+Capabilities include `videoCover`: `null` when the platform publishes no video, otherwise `{ image, frame, postTypes, required, note }`. `image` and `frame` say whether each kind of cover is applied, `postTypes` lists where (for example `post` and `reel`, not `story`), `required` is true when a video needs a cover, and `note` explains a platform that chooses its own frame.
 
 ## Platform matrix
 

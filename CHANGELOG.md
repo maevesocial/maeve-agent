@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Document video covers on every platform: one cover per video (`contentMedia[0].cover`, an image or a frame), the `videoCover` capability that says where it applies, and the `publishWarnings` entry when a cover could not be applied.
+- `cover` is now a typed object, `{ coverMediaId?, thumbOffsetMs? }` or `null`. Unknown keys inside it are still dropped, and saving rejects a cover that is not an image or a frame past the end of the video.
+- Pinterest video Pins no longer need a cover; without one they use the video's poster or first frame.
+
 ## 1.1.3
 
 - Match the canonical skill to the current server and `maeve-cli` 0.16.0, including the review request and decision shapes, reaction values and label group deletion.

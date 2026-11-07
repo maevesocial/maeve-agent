@@ -130,7 +130,8 @@ Then check:
 
 Known strict cases:
 
-- Pinterest requires media, `publishTitle`, and `settings.boardId`. Video pins also require a cover: pass `contentMedia[].cover.coverMediaId`, or use a video uploaded through the app (app uploads get a stored thumbnail; CLI/API uploads do not).
+- Pinterest requires media, `publishTitle`, and `settings.boardId`. A video Pin without a cover uses the video's stored poster, or its first frame.
+- A published content item with `publishWarnings` containing `video_cover_not_applied` went out without its cover; the message says why and what the post shows instead. Do not republish to fix it: check the cover media and the platform's own cover settings, such as custom-thumbnail access in YouTube Studio.
 - YouTube requires one video and `publishTitle`.
 - TikTok requires media and every post publishes publicly. `publishTitle` is optional.
 
