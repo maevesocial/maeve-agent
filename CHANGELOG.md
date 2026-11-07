@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Document video covers on every platform: one cover per video (`contentMedia[0].cover`, an image or a frame), the `videoCover` capability that says where it applies, and the `publishWarnings` entry when a cover could not be applied.
-- `cover` is now a typed object, `{ coverMediaId?, thumbOffsetMs? }` or `null`. Unknown keys inside it are still dropped, and saving rejects a cover that is not an image or a frame past the end of the video.
+- `cover` is now a typed object, `{ coverMediaId?, thumbOffsetMs? }` or `null`. The public API still drops unknown keys inside it; MCP and the in-app agent refuse them. Saving rejects a cover that is not an image or a frame past the end of the video.
 - Pinterest video Pins no longer need a cover; without one they use the video's poster or first frame.
 
 ## 1.1.3
