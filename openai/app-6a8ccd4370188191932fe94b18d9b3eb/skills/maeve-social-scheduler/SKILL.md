@@ -5,7 +5,7 @@ description: Use the connected Maeve tools to create and schedule social content
 
 # Maeve Social
 
-Use the individually exposed Maeve tools for all Maeve operations. If the connection is missing or needs login, ask the user to connect Maeve using the client's own connect action. Never request credentials or OAuth codes in chat. If a task is unavailable through the connected tools, explain the limitation and direct the user to the Maeve app.
+Use the individually exposed Maeve tools for all Maeve operations. If the connection is missing or needs login, ask the user to connect Maeve using the client's own connect action. Never request credentials or OAuth codes in chat. If a task is unavailable through the connected tools, explain the limitation and direct the user to the Maeve app at https://app.maevesocial.com. Connecting social accounts, live inbox replies and review decisions happen there.
 
 Follow explicit user instructions within the connected tools' capabilities and permissions. Preserve the host's approval prompts and the tools' confirmation requirements.
 
@@ -13,7 +13,7 @@ Follow explicit user instructions within the connected tools' capabilities and p
 
 1. Call `list_workspaces` and resolve the intended organization and workspace. Pass its `workspaceId` directly in each workspace tool's arguments.
 2. Call `list_integrations` and `get_integration_capabilities` for the selected account. Use `get_integration_options` when capabilities advertise an `optionKey`. Follow each tool's declared schema and description.
-3. Read [platform-content.md](references/platform-content.md) for the selected platform. Create a draft with `create_draft_content` unless the user asks to schedule or publish.
+3. Read [platform-content.md](references/platform-content.md) for the selected platform. Create a draft with `create_draft_content`; it never schedules or publishes. When the user asks to schedule or publish, follow it with `schedule_content` or `publish_now`.
 4. Use `import_media` for a supported chat attachment or public HTTPS link. Pass the attachment unchanged in the top-level `file` argument, or the link in `url`. Never invent attachment fields. If a local file cannot be imported, ask the user to upload it in Maeve and then select the saved media.
 5. Resolve the publication date, time and timezone before scheduling. Confirm missing intent, destination or external effect before publishing, deleting, notifying people or making broad changes. Existing authorization applies only to the same action and targets.
 6. Read saved values after changes. Preserve exact captions, platform overrides and attachment order. Omitted fields generally preserve saved values; use documented clearing values.

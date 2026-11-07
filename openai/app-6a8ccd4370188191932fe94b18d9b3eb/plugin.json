@@ -28,6 +28,8 @@
         "websiteURL": "https://maevesocial.com"
       },
       "review": {
+        "commerce": false,
+        "commerce_description": "Maeve Social does not sell products, process payments or offer paid advertising in ChatGPT.",
         "demo_recording_url": "https://youtu.be/xpMgHQmJu_g",
         "test_cases": {
           "positive": [
@@ -40,8 +42,8 @@
             {
               "description": "Read scheduled content in the reviewer workspace. First select the workspace returned by list_workspaces. Resolve this week in that workspace's timezone. Empty results are valid.",
               "prompt": "Show me what is scheduled this week in my review workspace, including the accounts and local publication times. Do not change anything.",
-              "tools_triggered": "list_workspaces, list_content",
-              "expected_behavior": "Use the selected workspaceId and scheduled-content filters with the correct local-week boundaries. Report returned account, status and scheduled time for each item, or clearly report an empty result. Do not create, schedule or publish content."
+              "tools_triggered": "list_workspaces, list_calendar",
+              "expected_behavior": "Call list_calendar with the selected workspaceId, the start and end of this week in that workspace's timezone, and a scheduled status filter. Report returned account, status and scheduled time for each item, or clearly report an empty result. Do not create, schedule or publish content."
             },
             {
               "description": "Browse saved media in the reviewer workspace. Provide sample image assets to the dedicated account before review. No upload or publication is requested.",
@@ -80,7 +82,7 @@
       },
       "publication": {
         "countries": [],
-        "release_notes": "Paid advertising tools are no longer offered in ChatGPT. Tool annotations were corrected to match each tool's behavior, and tool descriptions were clarified."
+        "release_notes": "Paid advertising tools are no longer offered in ChatGPT. The draft creation tools only create drafts; scheduling uses the scheduling tools. Tool annotations now match each tool's behavior, and tool descriptions were clarified."
       }
     }
   }
