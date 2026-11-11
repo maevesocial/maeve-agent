@@ -21,9 +21,9 @@ For platform-specific models and clearing behavior, read [Platform content](plat
 
 - Use UUID strings for workspace, integration, content, media, approver, batch, folder, label, pillar, format, campaign, and campaign phase IDs.
 - Grid planner IDs must be UUIDv4 strings.
-- Scheduling times are ISO 8601. MCP reads a time without an offset, such as `2026-05-01T10:00:00`, in the workspace timezone that `workspace.list` returns. maeve-cli 0.16.0 and the public API reject a time without an offset, so add one there, for example `2026-05-01T10:00:00+10:00` or `2026-05-01T00:00:00Z`.
+- Scheduling times are ISO 8601. MCP and maeve-cli 0.17.0 or later (`content:create`, `content:schedule` and `content:intended-time`) read a time without an offset, such as `2026-05-01T10:00:00`, in the workspace timezone that `workspace.list` returns. The public API and older CLI versions reject a time without an offset, so add one there, for example `2026-05-01T10:00:00+10:00` or `2026-05-01T00:00:00Z`.
 - Upload local media through Maeve first, then attach it with `contentMedia[].mediaId`.
-- `contentMedia` accepts up to 20 attachments for `linkedin` and `linkedin-page` and up to 10 for every other platform. maeve-cli 0.16.0 still stops at 10 for every platform. Thread replies keep their own limit of 10 each. Apply the platform `maxMedia` from capabilities when it is lower.
+- `contentMedia` accepts up to 20 attachments for `linkedin` and `linkedin-page` and up to 10 for every other platform. maeve-cli 0.16.0 and older stop at 10 for every platform. Thread replies keep their own limit of 10 each. Apply the platform `maxMedia` from capabilities when it is lower.
 - Base content create/update targets one `integrationId` and one integration-scoped content row. Multi-platform composition should fan out to separate grouped rows.
 - For drafts, omit `intent` or include `intent: "draft"`.
 - `content:update` uses the create-content shape except `intent` and `scheduledAt`, and at least one field must be present. Use scheduling or revert-to-draft commands to change publication time.

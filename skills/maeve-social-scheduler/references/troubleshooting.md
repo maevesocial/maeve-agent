@@ -102,7 +102,7 @@ Common fixes:
 
 ## Timezone errors
 
-maeve-cli 0.16.0 and the public API reject a `scheduledAt` without an offset; MCP reads it in the workspace timezone. Add an offset such as `+10:00` or UTC `Z`:
+The public API and maeve-cli 0.16.0 or older reject a `scheduledAt` without an offset; MCP and maeve-cli 0.17.0 or later read it in the workspace timezone. Add an offset such as `+10:00` or UTC `Z`:
 
 ```json
 { "scheduledAt": "2026-05-01T10:00:00+10:00" }

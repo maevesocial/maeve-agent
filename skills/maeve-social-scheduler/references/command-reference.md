@@ -1,6 +1,6 @@
 # Command reference
 
-Curated from the canonical `maeve-cli` 0.16.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
+Curated from the canonical `maeve-cli` 0.17.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
 
 ## Contents
 
@@ -465,7 +465,7 @@ Goal: read performance data and generate reports safely.
 
 ### Instagram competitor research workflow
 
-Goal: answer questions about the Instagram accounts a workspace tracks, read-only.
+Goal: answer questions about the Instagram accounts a workspace tracks, read-only. The commands need `maeve-cli` 0.17.0 or later.
 
 1. Use `competitors:list` to see the tracked accounts, their `igUserId` and `username`, and your own connected accounts in `eligibleConnections`.
 2. Use `competitors:posts --competitor <igUserId|@username>` for posts with full captions, `permalink`, `postedAt`, `likeCount`, `commentsCount` and `viewCount`. Sort with `--sort recent|likes|comments|views|engagement|rising|discussed|reach`, filter with `--format reels|feed` or `--standouts`, and page with `--limit` (up to 60) and `--offset` against `total`.
