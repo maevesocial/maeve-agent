@@ -63,6 +63,9 @@ maeve analytics:posts --workspace <workspaceId> --integration <integrationId>
 maeve analytics:posts-aggregate --workspace <workspaceId>
 maeve analytics:post --workspace <workspaceId> --id <contentId>
 maeve analytics:demographics --workspace <workspaceId> --integration <integrationId>
+maeve competitors:list --workspace <workspaceId>
+maeve competitors:posts --workspace <workspaceId> --competitor <igUserId|@username> --sort views --format reels --limit 50
+maeve competitors:benchmark --workspace <workspaceId> --competitor <igUserId|@username> --days 90
 maeve inbox:threads --workspace <workspaceId>
 maeve inbox:messages --workspace <workspaceId> --thread <threadId>
 maeve inbox:stats --workspace <workspaceId>
@@ -459,6 +462,16 @@ Goal: read performance data and generate reports safely.
 6. Use `analytics:demographics --integration <id>` for audience data.
 7. Generate PDF reports with `analytics:report --yes` only after confirmation; report generation is standard-plan only and can be expensive.
 8. Return date range, integrations included, key metric fields requested, report path if generated, and any plan/provider blocker.
+
+### Instagram competitor research workflow
+
+Goal: answer questions about the Instagram accounts a workspace tracks, read-only.
+
+1. Use `competitors:list` to see the tracked accounts, their `igUserId` and `username`, and your own connected accounts in `eligibleConnections`.
+2. Use `competitors:posts --competitor <igUserId|@username>` for posts with full captions, `permalink`, `postedAt`, `likeCount`, `commentsCount` and `viewCount`. Sort with `--sort recent|likes|comments|views|engagement|rising|discussed|reach`, filter with `--format reels|feed` or `--standouts`, and page with `--limit` (up to 60) and `--offset` against `total`.
+3. Use `competitors:benchmark --competitor <igUserId|@username> --days <7-1095>` for growth, cadence, format mix, engagement, top posts and hashtags.
+4. `viewCount` is reels only and includes paid views. Posts outside the plan's history window are not returned.
+5. Adding or removing a tracked account stays in the app. Do not suggest a CLI command for it.
 
 ### Inbox workflow
 
