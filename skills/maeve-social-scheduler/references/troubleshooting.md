@@ -36,7 +36,7 @@ For automation, prefer env vars. For local sessions, use:
 maeve auth:login
 ```
 
-Browser login tokens expire after 7 days and are stored per API URL.
+Browser login tokens are stored per API URL and last 90 days from their last use, so a terminal in regular use stays signed in. maeve-cli 0.17.0 or older stops using a login on the date saved when it was made, so upgrade to 0.18.0 or later.
 
 For workspace-scoped keys stored under a named environment variable, do not paste the key value into commands or chat. Pass the variable name:
 

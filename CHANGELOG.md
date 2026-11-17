@@ -5,6 +5,8 @@
 - Document video covers on every platform: one cover per video (`contentMedia[0].cover`, an image or a frame), the `videoCover` capability that says where it applies, and the `publishWarnings` entry when a cover could not be applied.
 - `cover` is now a typed object, `{ coverMediaId?, thumbOffsetMs? }` or `null`. The public API still drops unknown keys inside it; MCP and the in-app agent refuse them. Saving rejects a cover that is not an image or a frame past the end of the video.
 - Pinterest video Pins no longer need a cover; without one they use the video's poster or first frame.
+- Document Google Ads through MCP: the `ads.google.*` reads, changing a Search or Performance Max campaign with a preview, and creating one behind an approval.
+- A CLI browser login now lasts 90 days from its last use, so a terminal in regular use stays signed in. This needs `maeve-cli` 0.18.0 or later; older versions stop using a login on the date saved when it was made.
 
 ## 1.1.3
 
