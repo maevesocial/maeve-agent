@@ -18,7 +18,7 @@ Obtain the user's agreement to the specific action, target and external effect b
 
 ## Media
 
-Call `import_media` with `workspaceId` and either `url` for a public HTTPS link or `file` for a supported chat attachment. Pass the supplied attachment object unchanged. Read `get_media` before attaching the saved media ID to content.
+Call `import_media` with `workspaceId` and either `url` for a public HTTPS link or `file` for a supported chat attachment. Pass the supplied attachment object unchanged. It accepts JPEG, PNG, GIF, WebP and AVIF images, MP4 and MOV videos, and PDF, Word and PowerPoint documents, and checks the type from the file itself. Read `get_media` before attaching the saved media ID to content.
 
 For local files unavailable as supported attachments, ask the user to upload them in Maeve and select the resulting media with `list_media` and `get_media`. Do not initialize upload sessions that require byte transfers outside the connected tools. Never report an initialized upload as completed.
 

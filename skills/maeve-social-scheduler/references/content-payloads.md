@@ -221,6 +221,7 @@ Supported upload extensions:
 
 - Images: `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`, `.avif`, max 50 MB.
 - Videos: `.mp4`, `.mov`, max 512 MB.
+- Documents: `.pdf`, `.ppt`, `.pptx`, `.doc`, `.docx`, max 100 MB (LinkedIn document posts).
 
 Update media:
 

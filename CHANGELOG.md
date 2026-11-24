@@ -7,6 +7,9 @@
 - Pinterest video Pins no longer need a cover; without one they use the video's poster or first frame.
 - Document Google Ads through MCP: the `ads.google.*` reads, changing a Search or Performance Max campaign with a preview, and creating one behind an approval.
 - A CLI browser login now lasts 90 days from its last use, so a terminal in regular use stays signed in. This needs `maeve-cli` 0.18.0 or later; older versions stop using a login on the date saved when it was made.
+- Document LinkedIn link posts and document posts (`settings.linkedinLinkUrl`, `linkedinLinkTitle` and `linkedinDocumentTitle`), and uploading or importing PDF, Word and PowerPoint files through MCP.
+- Document `analytics.get_content_performance`, which compares posts by post type, media format or taxonomy, and the post type and media format filters on post analytics. The CLI's `analytics:content-performance`, `--post-type` and `--media-format` need `maeve-cli` 0.19.0 or later.
+- Document the Instagram auto DM rule fields `flow`, `trackLinkClicks` and `isDraft`, and the CLI's `analytics:import-history` and `content:versions` commands.
 
 ## 1.1.3
 

@@ -56,7 +56,7 @@ Ensure the user has authorized the action and target before:
 - `integrations:pinterest:create-board`, `campaigns:delete`, `calendar:notes:delete`, and public Calendar snapshot creation, regeneration or revocation.
 - `strategy:platform:start-version`, `strategy:platform:remove`, `strategy:goal:delete`, `strategy:bet:delete`, and `strategy:bet:resolve`.
 - `grid:delete`, `grid:promote`, `grid:reorder`, `grid:remove-cover`.
-- `analytics:report`.
+- `analytics:report`, `analytics:import-history`.
 
 The confirmation prompt should include action, IDs, workspace, integration, scheduled time if any, recipient/reviewer impact if any, and whether the effect is public, destructive, or broad. Do not infer confirmation from older conversation context if the target IDs, integration, or effect changed.
 
@@ -84,6 +84,7 @@ This is the complete list of commands that need `--yes`. Only append it after co
 - `strategy:bet:delete`
 - `strategy:bet:resolve`
 - `analytics:report`
+- `analytics:import-history`
 - `inbox:read-all`
 - `inbox:resolve-all`
 - `inbox:reply`

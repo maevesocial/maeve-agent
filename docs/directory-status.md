@@ -1,11 +1,11 @@
 # Directory status
 
-Checked on 12 October 2026. The replacement OpenAI plugin row was updated on 7 November 2026.
+Checked on 12 October 2026. The replacement OpenAI plugin row was updated on 7 November 2026, and the two Claude rows on 24 November 2026.
 
 | Listing | Version and endpoint | Status |
 | --- | --- | --- |
-| Claude plugin | 1.1.2, `/mcp` | Published; serving commit `9d86275` |
-| Claude MCP connector | Four tools, `/mcp` | Submitted under the plugin's existing owner; in review |
+| Claude plugin | 1.1.3, `/mcp` | Published 28 October 2026; serving commit `18db3de`; newer commits refused by directory policy |
+| Claude MCP connector | Four tools, `/mcp` | Published and live |
 | Original OpenAI plugin | 2.0.0, `/mcp` | Retained during replacement review |
 | Replacement OpenAI plugin | 3.0.1, `/mcp/openai` | 3.0.0 rejected; 3.0.1 prepared, not uploaded |
 
@@ -17,7 +17,8 @@ Each submission has a separate reviewer account restricted to a populated review
 
 - OpenAI rejected 3.0.0, citing commerce for disallowed offerings among other reasons. Version 3.0.1 removes paid ads from the OpenAI plugin; upload it after the matching `/mcp/openai` changes are deployed. See the [OpenAI review record](../openai/SUBMISSION.md) for test and demo limitations.
 - Claude recommends title annotations on the four tools. Review the write-tool description against its policy attestation before making the next server metadata update; these changes have not been deployed.
-- Confirm that Claude pairs the new connector with the existing plugin after approval. The submission uses the same owner and production URL.
+- The directory's automatic policy check has refused every commit since 7 November 2026 (`76de464`, `68e4351`, `5c5c1d9`), so no skill change since 28 October reaches directory installs. It also flagged the live version on 4 November, which keeps serving. Blocking findings: files outside the allowed list (root `AGENTS.md` and `CLAUDE.md`, the other clients' plugin folders and `examples/codex-mcp-config.toml`; the directory suggests submitting a subfolder that holds only the plugin), and reading a credential from the user's machine (the `MAEVE_API_KEY` environment variable in the README and skill references). Fix those or appeal, then push.
+- The Claude connector is published. Confirm that Claude pairs it with the existing plugin; the same owner and production URL do not prove pairing.
 - Directory branding is separate from repository ownership. The Claude plugin still identifies its author as `jared-james`; OpenAI shows LILY DIA PTY LTD. Moving the repository to `maevesocial` does not itself update those fields.
 
 The root package supports the four-tool endpoint. The separate `openai/` package supports direct tools. Repository publication, server deployment and directory approval are independent release steps.

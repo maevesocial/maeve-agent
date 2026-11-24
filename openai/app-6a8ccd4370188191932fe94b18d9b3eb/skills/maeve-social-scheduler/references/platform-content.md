@@ -78,6 +78,8 @@ Select the exact personal or Page integration. Personal authors use member URNs;
 
 Use the live operation schema and capabilities to determine supported content and media. Provider discovery can advertise formats that the selected operation does not accept. Polls use the top-level payload described in [content-payloads.md](content-payloads.md) and cannot contain media.
 
+For a document post, attach one PDF, Word or PowerPoint file of up to 100 MB and 300 pages in `contentMedia`, with an optional `settings.linkedinDocumentTitle` of up to 400 characters; without it LinkedIn shows the filename. For a link post, set `settings.linkedinLinkUrl` and `settings.linkedinLinkTitle` (up to 400 characters), with at most one image as the card thumbnail. Neither mixes with other media, a poll, or each other.
+
 Use `captions.canonical` and an optional override keyed by `linkedin` or `linkedin-page`. An empty override stays empty; an empty overrides object clears overrides. Internal titles are planning fields. Use the matching platform crop key on each attachment; legacy personal-key Page crops remain supported. Alt text belongs to the media record. Scheduling uses Maeve's workspace timezone, not LinkedIn-native scheduling.
 
 Read content after publishing for a valid numeric share or ugcPost URN. Missing or fallback identities remain null. A URL or sent status alone does not establish native visibility. Verify the selected author and rendering when required, then use the existing deletion action; the sent audit remains. LinkedIn has no published-caption edit action.

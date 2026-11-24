@@ -1,6 +1,6 @@
 # Command reference
 
-Curated from the canonical `maeve-cli` 0.18.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
+Curated from the canonical `maeve-cli` 0.19.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
 
 ## Contents
 
@@ -10,7 +10,7 @@ Curated from the canonical `maeve-cli` 0.18.0 command surface. Use root `maeve -
 - Scheduling And Publishing
 - Destructive Or Broad Actions
 - Approvals And Client Reviews
-- Analytics Reports
+- Analytics Reports And History Imports
 - Core Workflow Playbooks
 - Common Sequences
 
@@ -39,6 +39,7 @@ These commands read state and are usually safe to run after auth/workspace disco
 ```bash
 maeve content:list --workspace <workspaceId>
 maeve content:get --workspace <workspaceId> --id <contentId>
+maeve content:versions --workspace <workspaceId> --id <contentId>
 maeve content:roots:list --workspace <workspaceId>
 maeve content:roots:get --workspace <workspaceId> --id <rootId>
 maeve articles:list --workspace <workspaceId>
@@ -59,10 +60,12 @@ maeve taxonomy:formats --workspace <workspaceId>
 maeve hashtags:list --workspace <workspaceId>
 maeve analytics:summary --workspace <workspaceId> --days 30
 maeve analytics:health --workspace <workspaceId> --integration <integrationId>
-maeve analytics:posts --workspace <workspaceId> --integration <integrationId>
-maeve analytics:posts-aggregate --workspace <workspaceId>
+maeve analytics:posts --workspace <workspaceId> --integration <integrationId> [--post-type post,reel] [--media-format video,carousel]
+maeve analytics:posts-aggregate --workspace <workspaceId> [--post-type reel] [--media-format video]
+maeve analytics:content-performance --workspace <workspaceId> --integration-ids <ids> --dimension mediaFormats --days 30 [--post-type post,reel] [--media-format image,video,carousel]
 maeve analytics:post --workspace <workspaceId> --id <contentId>
 maeve analytics:demographics --workspace <workspaceId> --integration <integrationId>
+maeve analytics:import-history:status --workspace <workspaceId> --integration <integrationId>
 maeve competitors:list --workspace <workspaceId>
 maeve competitors:posts --workspace <workspaceId> --competitor <igUserId|@username> --sort views --format reels --limit 50
 maeve competitors:benchmark --workspace <workspaceId> --competitor <igUserId|@username> --days 90
@@ -165,6 +168,7 @@ Prefer draft creation unless the user explicitly asks to schedule or publish:
 ```bash
 maeve content:create --workspace <workspaceId> --json create-content.json
 maeve content:update --workspace <workspaceId> --id <contentId> --json update-content.json
+maeve content:versions:restore --workspace <workspaceId> --id <contentId> --version-number <number> --expected-version-id <versionId> --expected-updated-at <timestamp>
 maeve content:roots:update --workspace <workspaceId> --id <rootId> --json root-update.json
 maeve articles:create --workspace <workspaceId> --integration <xIntegrationId> --title "Title" --body article.html [--cover <mediaId>]
 maeve articles:update --workspace <workspaceId> --id <contentId> [--title "Title"] [--body article.html --body-version <bodyVersion>] [--cover <mediaId> | --remove-cover]
@@ -342,12 +346,14 @@ maeve reviews:items:revoke --workspace <workspaceId> --review <reviewId> --item 
 
 `reviews:submit` takes an optional `--request-id` for safe retries. [safety-policy.md](safety-policy.md#cli-enforced---yes) says when `reviews:create` and `reviews:submit` need `--yes`. Review payload shapes are in [content-payloads.md](content-payloads.md#reviews).
 
-## Analytics reports
+## Analytics reports and history imports
 
-Analytics reads are safe. PDF generation needs the Standard plan:
+Analytics reads are safe. PDF generation needs the Standard plan, and full Instagram post history import spends the account's Instagram API allowance, so both need `--yes`:
 
 ```bash
 maeve analytics:report --workspace <workspaceId> --provider instagram --json analytics-report.json --output report.pdf --yes
+maeve analytics:import-history --workspace <workspaceId> --integration <integrationId> --yes
+maeve analytics:import-history:status --workspace <workspaceId> --integration <integrationId>
 ```
 
 ## Core workflow playbooks
@@ -456,12 +462,14 @@ Goal: read performance data and generate reports safely.
 
 1. Use `analytics:summary --days <1-90|all>` for workspace or integration overview.
 2. Use `analytics:health --integration <id>` for account health.
-3. Use `analytics:posts --integration <id>` for a single account's post list.
-4. Use `analytics:posts-aggregate --integration-ids <ids>` for cross-account comparisons.
-5. Use `analytics:post --id <contentId>` for one published content item.
-6. Use `analytics:demographics --integration <id>` for audience data.
-7. Generate PDF reports with `analytics:report --yes` only after confirmation; report generation is standard-plan only and can be expensive.
-8. Return date range, integrations included, key metric fields requested, report path if generated, and any plan/provider blocker.
+3. Use `analytics:posts --integration <id>` for a single account's post list; filter with `--post-type` and `--media-format`.
+4. Use `analytics:posts-aggregate --integration-ids <ids>` for cross-account comparisons; filter with `--post-type` and `--media-format`.
+5. Use `analytics:content-performance --integration-ids <ids> --dimension <postTypes|mediaFormats|pillars|formats|labels|labelGroups>` to compare grouped performance; filter with `--post-type` and `--media-format`. This command and the two filter flags need `maeve-cli` 0.19.0 or later; check root `maeve --help`.
+6. Use `analytics:post --id <contentId>` for one published content item.
+7. Use `analytics:demographics --integration <id>` for audience data.
+8. For full Instagram post history backfill, check `analytics:import-history:status --integration <id>` and start with `analytics:import-history --integration <id> --yes` only after confirmation.
+9. Generate PDF reports with `analytics:report --yes` only after confirmation; report generation is standard-plan only and can be expensive.
+10. Return date range, integrations included, key metric fields requested, report path if generated, and any plan/provider blocker.
 
 ### Instagram competitor research workflow
 
