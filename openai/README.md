@@ -1,6 +1,6 @@
 # OpenAI plugin source
 
-`app-6a8ccd4370188191932fe94b18d9b3eb/` contains the 3.0.2 metadata update for the [replacement OpenAI listing](https://platform.openai.com/plugins/manage/plugin_asdk_app_6ac1a331c0248191827893f61e4504e2). OpenAI rejected 3.0.0 and approved 3.0.1. The replacement was published on 25 November 2026. It connects to `https://api.maevesocial.com/mcp/openai`. The retained package name is independent of the Portal app ID; do not overwrite generated bindings or create another listing to change the version.
+`app-6a8ccd4370188191932fe94b18d9b3eb/` contains the 3.0.3 metadata update for the [replacement OpenAI listing](https://platform.openai.com/plugins/manage/plugin_asdk_app_6ac1a331c0248191827893f61e4504e2). OpenAI rejected 3.0.0 and approved 3.0.1. The replacement was published on 25 November 2026. It connects to `https://api.maevesocial.com/mcp/openai`. The retained package name is independent of the Portal app ID; do not overwrite generated bindings or create another listing to change the version.
 
 The repository root remains the package for the existing four-tool `/mcp` connection. Its MCP configurations and shared skill are unchanged by the OpenAI endpoint work. OpenAI has its own skill because its tools take direct arguments and do not use catalog discovery or generic execution. The OpenAI plugin does not offer paid ads, so its skill omits them; the shared skill keeps them for other clients. Do not sync the two copies.
 

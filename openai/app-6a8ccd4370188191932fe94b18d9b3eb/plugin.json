@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "app-6a8ccd4370188191932fe94b18d9b3eb",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Maeve Social brings organic and paid social media management into one workspace for agencies, businesses, creators and founders. In ChatGPT, you can plan organic content, turn saved media into drafts, check a client’s content calendar and see which posts performed best. You can also organize tasks and configure inbox auto-replies. Scheduling and publishing require your confirmation. Manage paid campaigns in the Maeve Social web app. A Maeve Social account is required.",
   "author": {
     "name": "LILY DIA PTY LTD"
@@ -22,7 +22,7 @@
         "composerIcon": "assets/maeve-icon.png",
         "longDescription": "Maeve Social brings organic and paid social media management into one workspace for agencies, businesses, creators and founders. In ChatGPT, you can plan organic content, turn saved media into drafts, check a client’s content calendar and see which posts performed best. You can also organize tasks and configure inbox auto-replies. Scheduling and publishing require your confirmation. Manage paid campaigns in the Maeve Social web app. A Maeve Social account is required.",
         "privacyPolicyURL": "https://maevesocial.com/privacy",
-        "shortDescription": "Plan and schedule organic social content",
+        "shortDescription": "Organic social media scheduler",
         "supportURL": "https://maevesocial.com/contact",
         "termsOfServiceURL": "https://maevesocial.com/terms",
         "websiteURL": "https://maevesocial.com"

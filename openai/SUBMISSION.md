@@ -13,9 +13,9 @@ On 28 October 2026, OpenAI rejected version 3.0.0 of the [replacement listing](h
 
 ## Directory copy for the next metadata update
 
-Checked against the [Maeve Social homepage](https://maevesocial.com) and the [published ChatGPT listing](https://chatgpt.com/plugins/plugin_asdk_app_6ac1a331c0248191827893f61e4504e2) on 25 November 2026. The live 3.0.1 tagline is “Social media scheduler”. The homepage describes the wider product as organic and paid social media management and names agencies, brands, creators and founders. Version 3.0.2 includes the following copy for review.
+Checked against the [Maeve Social homepage](https://maevesocial.com) and the [published ChatGPT listing](https://chatgpt.com/plugins/plugin_asdk_app_6ac1a331c0248191827893f61e4504e2) on 25 November 2026. The live 3.0.1 tagline is “Social media scheduler”. The homepage describes the wider product as organic and paid social media management and names agencies, brands, creators and founders. The Portal flagged the 3.0.2 subtitle for exceeding 30 characters. Version 3.0.3 includes the following copy for review.
 
-**Short description:** Plan and schedule organic social content
+**Short description:** Organic social media scheduler
 
 **Description:** Maeve Social brings organic and paid social media management into one workspace for agencies, businesses, creators and founders. In ChatGPT, you can plan organic content, turn saved media into drafts, check a client’s content calendar and see which posts performed best. You can also organize tasks and configure inbox auto-replies. Scheduling and publishing require your confirmation. Manage paid campaigns in the Maeve Social web app. A Maeve Social account is required.
 
