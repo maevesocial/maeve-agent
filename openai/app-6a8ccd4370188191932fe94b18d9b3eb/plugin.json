@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "app-6a8ccd4370188191932fe94b18d9b3eb",
-  "version": "3.0.1",
-  "description": "Maeve Social is a social media scheduler and management platform for planning, creating, scheduling, and publishing content. Connect ChatGPT to your Maeve Social workspace to create drafts, manage your social media content calendar, organize media and tasks, configure inbox auto-replies, and review social media analytics. Schedule content and publish with explicit confirmation. Maeve Social supports Instagram, Facebook, TikTok, LinkedIn, LinkedIn Pages, X, Threads, YouTube, Pinterest, and Google Business Profile. Content creation starts with a draft, and high-impact actions require confirmation. Requires a Maeve Social account.",
+  "version": "3.0.2",
+  "description": "Maeve Social brings organic and paid social media management into one workspace for agencies, businesses, creators and founders. In ChatGPT, you can plan organic content, turn saved media into drafts, check a client’s content calendar and see which posts performed best. You can also organize tasks and configure inbox auto-replies. Scheduling and publishing require your confirmation. Manage paid campaigns in the Maeve Social web app. A Maeve Social account is required.",
   "author": {
     "name": "LILY DIA PTY LTD"
   },
@@ -20,9 +20,9 @@
         "displayName": "Maeve Social",
         "logo": "assets/maeve-icon.png",
         "composerIcon": "assets/maeve-icon.png",
-        "longDescription": "Maeve Social is a social media scheduler and management platform for planning, creating, scheduling, and publishing content. Connect ChatGPT to your Maeve Social workspace to create drafts, manage your social media content calendar, organize media and tasks, configure inbox auto-replies, and review social media analytics. Schedule content and publish with explicit confirmation. Maeve Social supports Instagram, Facebook, TikTok, LinkedIn, LinkedIn Pages, X, Threads, YouTube, Pinterest, and Google Business Profile. Content creation starts with a draft, and high-impact actions require confirmation. Requires a Maeve Social account.",
+        "longDescription": "Maeve Social brings organic and paid social media management into one workspace for agencies, businesses, creators and founders. In ChatGPT, you can plan organic content, turn saved media into drafts, check a client’s content calendar and see which posts performed best. You can also organize tasks and configure inbox auto-replies. Scheduling and publishing require your confirmation. Manage paid campaigns in the Maeve Social web app. A Maeve Social account is required.",
         "privacyPolicyURL": "https://maevesocial.com/privacy",
-        "shortDescription": "Social media scheduler",
+        "shortDescription": "Plan and schedule organic social content",
         "supportURL": "https://maevesocial.com/contact",
         "termsOfServiceURL": "https://maevesocial.com/terms",
         "websiteURL": "https://maevesocial.com"
@@ -82,7 +82,7 @@
       },
       "publication": {
         "countries": [],
-        "release_notes": "Paid advertising tools are no longer offered in ChatGPT. The draft creation tools only create drafts; scheduling uses the scheduling tools. Tool annotations now match each tool's behavior, and tool descriptions were clarified."
+        "release_notes": "Updated the directory description to clarify the organic social workflows available in ChatGPT."
       }
     }
   }
