@@ -67,9 +67,9 @@ This is the complete list of commands that need `--yes`. Append it only after co
 
 ## Credential handling
 
-- Prefer `MAEVE_API_KEY` and `MAEVE_API_URL` environment variables for automation, and browser login for local human sessions.
+- Use browser login for local human sessions. Automation runs on an API key the operator has already set up, as the maeve-cli README describes. Do not look for a key, read it or set it yourself.
 - Treat API keys, CLI login tokens, OAuth codes, bearer tokens, refresh tokens, presigned URLs, provider tokens, scopes and raw provider payloads as sensitive. Do not ask the user to paste them into chat, and do not print them from files or command output.
-- Keep an MCP API key in the shell environment or client secret storage. Do not put it in `.mcp.json`, `config.toml`, command history, screenshots, files or chat.
+- An MCP API key belongs in the client's secret storage. Do not put it in `.mcp.json`, `config.toml`, command history, screenshots, files or chat.
 - Treat media view/download URLs as sensitive, especially if presigned or temporary.
 - If a command output includes sensitive values, summarize the non-sensitive state instead of echoing the raw payload.
 

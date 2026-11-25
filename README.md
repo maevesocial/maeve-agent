@@ -181,27 +181,7 @@ CLI login and MCP login are separate. Signing in to one does not authenticate th
 
 Use an API key when browser authentication is unavailable or for server-side automation.
 
-macOS and Linux:
-
-```bash
-export MAEVE_API_KEY="ezb_live_..."
-export MAEVE_API_URL="https://api.maevesocial.com"
-```
-
-PowerShell:
-
-```powershell
-$env:MAEVE_API_KEY="ezb_live_..."
-$env:MAEVE_API_URL="https://api.maevesocial.com"
-```
-
-Codex fallback:
-
-```toml
-[mcp_servers.maeve]
-url = "https://api.maevesocial.com/mcp"
-bearer_token_env_var = "MAEVE_API_KEY"
-```
+Create a key in Maeve **Settings -> Developer**. The [maeve-cli documentation](https://www.npmjs.com/package/maeve-cli) explains how to give it to the CLI, and your MCP client's documentation explains how to send it as a bearer token.
 
 Do not put raw API keys in URLs, prompts, project files, screenshots, shared chat, or git history.
 
@@ -253,7 +233,7 @@ Claude Code:
 
 ## Maintaining the plugin
 
-This repository is the maintained public source for the portable, Codex, and Claude plugin packages. Update the bundled skill under `skills/maeve-social-scheduler`, keep the marketplace and plugin manifests aligned when the version changes, then install the repository package locally and test it in a new conversation before publishing. Installed plugin caches are outputs and must not be edited as source.
+This repository is the maintained public source for the portable, Codex, and Claude plugin packages. Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing it. Update the bundled skill under `skills/maeve-social-scheduler`, keep the marketplace and plugin manifests aligned when the version changes, then install the repository package locally and test it in a new conversation before publishing. Installed plugin caches are outputs and must not be edited as source.
 
 Server deployment, repository publication and directory review are separate steps. See [directory status](docs/directory-status.md) for the current releases and outstanding reviews. After changing hosted MCP metadata, refresh the custom connection, check its tools, and start a new conversation. Package and listing changes follow the directory's review process; see the [OpenAI connector refresh guide](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata).
 

@@ -24,29 +24,13 @@ maeve auth:status
 maeve auth:whoami
 ```
 
-Credential precedence is:
-
-1. `--api-key`
-2. `--api-key-env <name>`
-3. `MAEVE_API_KEY`
-4. Stored CLI login token
-
-For automation, prefer env vars. For local sessions, use:
+An API key the operator has set up for the CLI takes precedence over the stored browser login. If the wrong account or workspace answers, tell the user which account `maeve auth:whoami` reports and let them change the key; the maeve-cli README gives the key options and their order. For local sessions, use:
 
 ```bash
 maeve auth:login
 ```
 
 Browser login tokens are stored per API URL and last 90 days from their last use, so a terminal in regular use stays signed in.
-
-For workspace-scoped keys stored under a named environment variable, do not paste the key value into commands or chat. Pass the variable name:
-
-```bash
-maeve --api-key-env MAEVE_API_KEY_WORKSPACE auth:status
-maeve --api-key-env MAEVE_API_KEY_WORKSPACE media:labels:list --workspace <workspaceId>
-```
-
-When `--api-key-env` is provided, that named variable must exist. The CLI will not silently fall back to `MAEVE_API_KEY`.
 
 For hosted MCP, the fix is the MCP client's own connect step, never the CLI. The steps, token lifetimes and API-key fallback are in [mcp-tools.md](mcp-tools.md#connection).
 

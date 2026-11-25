@@ -22,7 +22,7 @@ Use this reference for hosted MCP setup, operation discovery, execution, upload,
 ## Connection
 
 - Prefer the MCP client's own browser connection. Claude Code: run `/mcp`, choose `maeve`, and approve Maeve in the browser. Codex: run `codex mcp login maeve` and approve Maeve in the browser. Other clients: use their **Authenticate** action for `maeve`. The client handles the redirect itself, so do not paste the authorization URL into chat or ask for it back.
-- Use `MAEVE_API_KEY` only when the client does not support browser authentication or for server-side automation. Storage rules are in [safety-policy.md](safety-policy.md#credential-handling).
+- An API key is only for a client that does not support browser authentication, or for server-side automation. The operator sets it up; see [safety-policy.md](safety-policy.md#credential-handling).
 - CLI login does not authenticate MCP: `maeve auth:login` signs in the CLI only and does not create an MCP token.
 - MCP access tokens last 6 hours and refresh through 90-day rotating refresh tokens. If a client cannot refresh, was revoked, or asks for approval again, run the same connect step again.
 - Organization admins can revoke active AI tool connections, including browser-approved MCP grants, in Maeve **Settings -> Developer**.
