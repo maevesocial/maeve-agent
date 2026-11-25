@@ -1,18 +1,20 @@
 # Command reference
 
-Curated from the canonical `maeve-cli` 0.19.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe.
+Curated from the `maeve-cli` 0.19.0 command surface. Use root `maeve --help` to verify that a command exists; do not use subcommand help as an existence probe. Commands shown with `--yes` need it; [safety-policy.md](safety-policy.md#cli-enforced---yes) has the complete list.
 
 ## Contents
 
 - Discovery
-- Safe Reads
-- Draft And Low-Risk Mutations
-- Scheduling And Publishing
-- Destructive Or Broad Actions
-- Approvals And Client Reviews
-- Analytics Reports And History Imports
-- Core Workflow Playbooks
-- Common Sequences
+- Safe reads
+- Task board
+- Workbench
+- Draft and low-risk mutations
+- Scheduling and publishing
+- Destructive or broad actions
+- Approvals and client reviews
+- Analytics, reports and history imports
+- Instagram competitor research
+- Older CLI versions
 
 ## Discovery
 
@@ -30,7 +32,7 @@ maeve integrations:capabilities --workspace <workspaceId> --integration <integra
 maeve integrations:options --workspace <workspaceId> --integration <integrationId> --key <optionKey>
 ```
 
-Use MCP `integrations.get_options` through `maeve_read` when connected. Use CLI `integrations:options --json <file>` as the fallback when the option key needs input, such as YouTube region, location search, Instagram audio search or the TikTok music chart.
+If the user named no workspace, choose one only when a single workspace is clearly the target; otherwise ask. Option bodies for `integrations:options --json <file>` are in [integration-capabilities.md](integration-capabilities.md#commands).
 
 ## Safe reads
 
@@ -114,39 +116,9 @@ maeve tasks:comments --workspace <workspaceId> --id <taskId>
 maeve tasks:activity --workspace <workspaceId> --id <taskId> --limit 50
 ```
 
-Task-board mutations:
+Campaigns and strategy reads are general workspace context. The `boosts:*` reads require the Basic plan, and the CLI leaves the `/v1/boosts` writes off because they spend ad budget. Paid ads, including Meta boosts, run through the `ads:*` group, generated from the shared ads operations: `ads:meta:boosts:create` returns a pending approval and its review URL and creates nothing until the user approves on the Maeve review page; repeat the same request with the approval ID afterwards. `ads:meta:boosts:activate`, `:pause`, `:resume`, `:reconcile` and `:cleanup` manage a created boost. Use root `maeve --help` for the full `ads:*` list.
 
-```bash
-maeve tasks:create --workspace <workspaceId> --json task.json
-maeve tasks:update --workspace <workspaceId> --id <taskId> --json task-update.json
-maeve tasks:move --workspace <workspaceId> --id <taskId> --json task-move.json
-maeve tasks:delete --workspace <workspaceId> --id <taskId> --yes
-maeve tasks:comments:create --workspace <workspaceId> --id <taskId> --json task-comment.json
-maeve tasks:checklist:create --workspace <workspaceId> --id <taskId> --json checklist-item.json
-maeve tasks:checklist:update --workspace <workspaceId> --id <taskId> --item <itemId> --json checklist-update.json
-maeve tasks:checklist:move --workspace <workspaceId> --id <taskId> --item <itemId> --json checklist-move.json
-maeve tasks:checklist:delete --workspace <workspaceId> --id <taskId> --item <itemId> --yes
-```
-
-Task mutations require an Editor-or-higher workspace role. Deleted tasks cannot be restored.
-
-Workbench pages and content tables:
-
-```bash
-maeve workbench:pages:list --workspace <workspaceId> --type content_table
-maeve workbench:pages:get --workspace <workspaceId> --page <pageId>
-maeve workbench:rows:list --workspace <workspaceId> --page <pageId> --limit 50
-maeve workbench:pages:create --workspace <workspaceId> --title "October"
-maeve workbench:rows:add --workspace <workspaceId> --page <pageId> --post <postId>
-maeve workbench:rows:set-cells --workspace <workspaceId> --page <pageId> --row <placementId> --expected-version <version> --json cells.json
-maeve workbench:rows:remove --workspace <workspaceId> --page <pageId> --row <placementId> --expected-version <version> --yes
-```
-
-Workbench commands need `maeve-cli` 0.16.0 or later; check root `maeve --help`. Writes require Workbench manage access. `workbench:pages:create` always creates a content table. Row writes take the row `version` from the latest `workbench:rows:list`; on a 409, list again and resend with the new version. `workbench:rows:set-cells` replaces the whole cell map keyed by column ID from `workbench:pages:get`. `workbench:rows:remove` cannot be undone and keeps the post.
-
-Campaigns and strategy reads are general workspace context. The `boosts:*` reads require the Basic plan, and the CLI leaves the `/v1/boosts` writes off because they spend ad budget. Paid ads, including Meta boosts, run through the `ads:*` group, generated from the shared ads operations: `ads:meta:boosts:create` returns a pending approval and its review URL and creates nothing until the person approves on the Maeve review page; repeat the same request with the approval ID afterwards. `ads:meta:boosts:activate`, `:pause`, `:resume`, `:reconcile` and `:cleanup` manage a created boost. Use root `maeve --help` for the full `ads:*` list.
-
-Standard-plan reads:
+Standard plan reads:
 
 ```bash
 maeve content:pending-approval-count --workspace <workspaceId>
@@ -160,6 +132,44 @@ maeve reviews:history:content --workspace <workspaceId> --content <contentId>
 maeve reviews:history:get --workspace <workspaceId> --review <reviewId>
 maeve reviews:items:activity --workspace <workspaceId> --review <reviewId> --item <itemId>
 ```
+
+## Task board
+
+```bash
+maeve tasks:create --workspace <workspaceId> --json task.json
+maeve tasks:update --workspace <workspaceId> --id <taskId> --json task-update.json
+maeve tasks:move --workspace <workspaceId> --id <taskId> --json task-move.json
+maeve tasks:delete --workspace <workspaceId> --id <taskId> --yes
+maeve tasks:comments:create --workspace <workspaceId> --id <taskId> --json task-comment.json
+maeve tasks:checklist:create --workspace <workspaceId> --id <taskId> --json checklist-item.json
+maeve tasks:checklist:update --workspace <workspaceId> --id <taskId> --item <itemId> --json checklist-update.json
+maeve tasks:checklist:move --workspace <workspaceId> --id <taskId> --item <itemId> --json checklist-move.json
+maeve tasks:checklist:delete --workspace <workspaceId> --id <taskId> --item <itemId> --yes
+```
+
+- Task mutations require an Editor-or-higher workspace role. Deleted tasks cannot be restored.
+- Update payloads carry only changed fields. Assignee and label arrays are full replacement sets. `dueAt` is a `YYYY-MM-DD` date.
+- Link a task to content with `postId` on create or update; `tasks:linkable-posts` finds content that can be linked.
+
+## Workbench
+
+Workbench pages and content tables, such as a monthly plan:
+
+```bash
+maeve workbench:pages:list --workspace <workspaceId> --type content_table
+maeve workbench:pages:get --workspace <workspaceId> --page <pageId>
+maeve workbench:rows:list --workspace <workspaceId> --page <pageId> --limit 50
+maeve workbench:pages:create --workspace <workspaceId> --title "October"
+maeve workbench:rows:add --workspace <workspaceId> --page <pageId> --post <postId>
+maeve workbench:rows:set-cells --workspace <workspaceId> --page <pageId> --row <placementId> --expected-version <version> --json cells.json
+maeve workbench:rows:remove --workspace <workspaceId> --page <pageId> --row <placementId> --expected-version <version> --yes
+```
+
+- Writes require Workbench manage access. `workbench:pages:create` always creates a content table; ask before creating one when no existing title fits.
+- `workbench:rows:add --post` takes the root `postId` from `content:roots:list`, not the content ID from `content:create`. A post can be on a table once.
+- Row writes take the row `version` from the latest `workbench:rows:list`; on a 409, list again and resend with the new version.
+- `workbench:rows:set-cells` replaces the whole cell map keyed by column ID from `workbench:pages:get`.
+- `workbench:rows:remove` cannot be undone and keeps the post.
 
 ## Draft and low-risk mutations
 
@@ -220,6 +230,10 @@ maeve inbox:tags:create --workspace <workspaceId> --name "VIP" --color "#2563eb"
 maeve inbox:tags:update --workspace <workspaceId> --tag <tagId> --name "New name"
 maeve inbox:tags:reorder --workspace <workspaceId> --json inbox-tag-ids.json
 maeve inbox:tag-thread --workspace <workspaceId> --thread <threadId> --tag <tagId>
+maeve inbox:read --workspace <workspaceId> --thread <threadId>
+maeve inbox:unread --workspace <workspaceId> --thread <threadId>
+maeve inbox:resolve --workspace <workspaceId> --thread <threadId>
+maeve inbox:reopen --workspace <workspaceId> --thread <threadId>
 maeve grid:create --workspace <workspaceId> --json grid-item.json
 maeve grid:update --workspace <workspaceId> --item <itemId> --json grid-update.json
 maeve grid:replace-media --workspace <workspaceId> --item <itemId> --json grid-media.json
@@ -248,7 +262,9 @@ maeve articles:send-to-x-drafts --workspace <workspaceId> --id <contentId> --yes
 
 `articles:send-to-x-drafts` writes a draft to the account's X drafts, which X's API cannot delete. Article bodies are HTML files whose images reference Media Room IDs; see the X section of [platform-content.md](platform-content.md).
 
-[safety-policy.md](safety-policy.md#cli-enforced---yes) lists every command that needs `--yes`. `content:published-caption` edits already-published provider content. `content:resolve-publishing-result` records only an outcome already verified on the connected platform; it does not publish or retry. `content:retry` can publish externally, so confirm it even though the CLI does not ask for `--yes`. `content:revert-to-draft` cancels scheduling for every scheduled edition of the same root; use its optional JSON scope preconditions when the affected editions need to be fixed explicitly. `content:schedule` and `content:intended-time` take the same optional `--json` preconditions, and `--clear` instead of `--scheduled-at` removes the time. `content:schedule`, `content:publish` and `content:retry` send an idempotency key; after a timeout, retry with the same `--idempotency-key` so the action runs once.
+`content:published-caption` edits already-published provider content. `content:resolve-publishing-result` records only an outcome already verified on the connected platform; it does not publish or retry. `content:retry` can publish externally, so confirm it even though the CLI does not ask for `--yes`. `content:revert-to-draft` cancels scheduling for every scheduled edition of the same root; use its optional JSON scope preconditions when the affected editions need to be fixed explicitly. `content:schedule` and `content:intended-time` take the same optional `--json` preconditions, and `--clear` instead of `--scheduled-at` removes the time. `content:schedule`, `content:publish` and `content:retry` send an idempotency key; after a timeout, retry with the same `--idempotency-key` so the action runs once.
+
+`content:schedule`, `content:intended-time` and `content:create` read a time without an offset in the workspace timezone; the public API rejects a `scheduledAt` without one. Use `content:intended-time` only for a planned publish time that does not schedule the content.
 
 ## Destructive or broad actions
 
@@ -270,10 +286,6 @@ maeve calendar:snapshots:regenerate --workspace <workspaceId> --id <snapshotId> 
 maeve strategy:platform:start-version --workspace <workspaceId> --platform instagram
 maeve strategy:platform:remove --workspace <workspaceId> --platform instagram
 maeve hashtags:delete --workspace <workspaceId> --id <hashtagGroupId>
-maeve inbox:read --workspace <workspaceId> --thread <threadId>
-maeve inbox:unread --workspace <workspaceId> --thread <threadId>
-maeve inbox:resolve --workspace <workspaceId> --thread <threadId>
-maeve inbox:reopen --workspace <workspaceId> --thread <threadId>
 maeve inbox:resolve-message --workspace <workspaceId> --message <messageId>
 maeve inbox:reopen-message --workspace <workspaceId> --message <messageId>
 maeve grid:reorder --workspace <workspaceId> --json grid-reorder.json
@@ -300,17 +312,17 @@ maeve grid:delete --workspace <workspaceId> --item <itemId> --yes
 maeve grid:promote --workspace <workspaceId> --item <itemId> --json grid-promote.json --yes
 ```
 
-Commands shown with `--yes` need it; [safety-policy.md](safety-policy.md#cli-enforced---yes) has the complete list.
-
-Content, campaigns, inbox tags and tasks have delete commands with no CLI restore path. Media uses a separate lifecycle: `media:delete` and `media:bulk-delete` move items to the Bin, `media:restore` and `media:bulk-restore` bring them back, and the permanent-delete commands remove binned media irreversibly.
+Content, campaigns, inbox tags and tasks have delete commands with no CLI restore path. Media uses a separate lifecycle: `media:delete` and `media:bulk-delete` move items to the Bin and return `deleteAfter`, `media:restore` and `media:bulk-restore` bring them back, and the permanent-delete commands remove binned media irreversibly. Scheduled-post usage blocks deletion with `MEDIA_ATTACHED_TO_SCHEDULED_POST`. A bulk label toggle is composed from `media:bulk-label` and `media:bulk-unlabel`.
 
 `media:label-groups:delete` takes `{ "mode": "delete-labels" }` or `{ "mode": "ungroup-labels" }` to say what happens to the labels in the group.
 
 Recurring series and occurrence IDs come from `recurringMetadata` on `content:list`. Cancelling a series removes every not-yet-published occurrence from the effective occurrence forward.
 
+`grid:reorder` needs the full item ID order for the integration.
+
 ## Approvals and client reviews
 
-Team and client approval runs through staged reviews. A review holds ordered team or client stages and one item per content. Standard-plan commands:
+Team and client approval runs through staged reviews. A review holds ordered team or client stages and one item per content. Standard plan commands:
 
 ```bash
 maeve reviews:resolve --workspace <workspaceId> --json routing.json
@@ -344,9 +356,9 @@ maeve reviews:items:override --workspace <workspaceId> --review <reviewId> --ite
 maeve reviews:items:revoke --workspace <workspaceId> --review <reviewId> --item <itemId> --json revoke.json --yes
 ```
 
-`reviews:submit` takes an optional `--request-id` for safe retries. [safety-policy.md](safety-policy.md#cli-enforced---yes) says when `reviews:create` and `reviews:submit` need `--yes`. Review payload shapes are in [content-payloads.md](content-payloads.md#reviews).
+`reviews:submit` sends saved content through the routed workflow and takes an optional `--request-id` for safe retries. [safety-policy.md](safety-policy.md#cli-enforced---yes) says when `reviews:create` and `reviews:submit` need `--yes`. Record decisions, overrides or revocations only when the user is the reviewer and asks for it; include `reason` for a rejection or override. Review payload shapes are in [content-payloads.md](content-payloads.md#reviews).
 
-## Analytics reports and history imports
+## Analytics, reports and history imports
 
 Analytics reads are safe. PDF generation needs the Standard plan, and full Instagram post history import spends the account's Instagram API allowance, so both need `--yes`:
 
@@ -356,210 +368,26 @@ maeve analytics:import-history --workspace <workspaceId> --integration <integrat
 maeve analytics:import-history:status --workspace <workspaceId> --integration <integrationId>
 ```
 
-## Core workflow playbooks
+- `analytics:summary` takes `--days <1-90|all>`.
+- `analytics:posts` lists one account's posts; `analytics:posts-aggregate --integration-ids <ids>` compares accounts.
+- `analytics:content-performance` groups by `--dimension <postTypes|mediaFormats|pillars|formats|labels|labelGroups>` and returns no rows without `--integration-ids`.
+- `--post-type` and `--media-format` filter all three commands.
+- Check `analytics:import-history:status` before starting an import. PDF report generation can be expensive.
 
-Use these playbooks when a user asks for a full workflow rather than one command.
+## Instagram competitor research
 
-### Workspace discovery
+`competitors:list`, `competitors:posts` and `competitors:benchmark` are read-only; the returned fields are described in [mcp-tools.md](mcp-tools.md#instagram-competitor-research).
 
-Goal: identify the authenticated user and usable workspace.
+- `competitors:posts --competitor <igUserId|@username>`: sort with `--sort recent|likes|comments|views|engagement|rising|discussed|reach`, filter with `--format reels|feed` or `--standouts`, and page with `--limit` (up to 60) and `--offset` against `total`.
+- `competitors:benchmark` takes `--days <7-1095>`.
+- Adding or removing a tracked account stays in the app. Do not suggest a CLI command for it.
 
-1. Run `maeve auth:status`.
-2. If signed out in a local human session, run `maeve auth:login`; use `MAEVE_API_KEY` for automation.
-3. If signed in, run `maeve auth:whoami`.
-4. Run `maeve workspaces:list`.
-5. If the user did not name a workspace, choose only when there is a single clear workspace; otherwise ask which workspace to use.
-6. Return workspace ID, workspace name if present, auth mode if visible, and any missing-access blocker.
+## Older CLI versions
 
-### Integration discovery
+Everything above describes `maeve-cli` 0.19.0. Upgrade an older install with `npm install -g maeve-cli@latest`, or run commands through `npx maeve-cli@latest`. Minimum versions:
 
-Goal: identify a connected social account and its platform requirements.
-
-1. Run `maeve integrations:list --workspace <workspaceId>`.
-2. Filter out integrations with status other than `connected` unless the task is troubleshooting.
-3. Run `maeve integrations:capabilities --workspace <workspaceId> --integration <integrationId>` for the target account.
-4. If any selected settings field has `optionKey`, execute MCP `integrations.get_options` through `maeve_read`, or run `maeve integrations:options` as the CLI fallback.
-5. Return integration ID, platform, username/name, status, post types, media requirements, title requirement, max media, settings fields, and option values used.
-
-### Media workflow
-
-Goal: select, upload, inspect, and organize media before content mutation.
-
-1. Discover workspace and integration if media is for a post.
-2. List existing media when the user asks to reuse assets:
-   `maeve media:list --workspace <workspaceId>`.
-3. Upload local files before attaching them:
-   `maeve media:upload ./asset.png --workspace <workspaceId>`.
-4. Inspect selected/uploaded media:
-   `maeve media:get --workspace <workspaceId> --id <mediaId>`.
-5. Use temporary URLs only when needed for preview/download:
-   `media:view-url` or `media:download-url`.
-6. Update metadata with `media:update --json`.
-7. Organize with folder and label commands when requested.
-8. Confirm before deletes or bulk moves and label changes.
-9. Return media IDs, filenames, media type, folder/label changes, and whether the media satisfies integration capabilities.
-
-`media:delete` and `media:bulk-delete` move active media to the Bin and return `deleteAfter`. Scheduled-post usage blocks deletion with `MEDIA_ATTACHED_TO_SCHEDULED_POST`; bulk label toggle is composed from `media:bulk-label` and `media:bulk-unlabel`.
-
-### Content workflow
-
-Goal: create or edit content safely, defaulting to draft.
-
-1. Discover workspace and integration.
-2. Run capabilities and dynamic options before platform-specific settings.
-3. Inspect relevant existing content with `content:list` or `content:get` when updating.
-4. Upload/select media first if needed.
-5. Create new content with `content:create --json` and draft intent unless schedule/publish is explicit.
-6. Update content with `content:update --id <contentId> --json <file>`; include only fields that should change.
-7. Schedule only when date, time, and timezone are explicit:
-   `content:schedule --scheduled-at "2026-05-01T10:00:00+10:00"`.
-8. Use `content:intended-time` only when the user wants a planned publish time without scheduling.
-9. Workflow status (idea, drafting, and so on) is set in the app, not the CLI; the CLI only filters by it with `content:list --workflow-status`.
-10. Return content ID, status, workflow status if known, workspace, integration, scheduled time, media IDs, the returned `appUrl` labeled **Open in Maeve**, and the next review step. Never construct a link from names or slugs.
-
-### Publishing workflow
-
-Goal: handle publish-now, retry, scheduling reversal, provider-result resolution, and deletion without accidental external effects.
-
-1. Read the content with `content:get`.
-2. Confirm workspace, integration, content ID, current status, and desired action.
-3. For publish-now, confirm explicit current-task intent, then run `content:publish --yes`.
-4. For published caption edits on Facebook, LinkedIn or LinkedIn Page, check `allowedActions.canUpdatePublishedCaption`, confirm the exact content ID and new caption, then run `content:published-caption --yes`.
-5. For retry, confirm external retry intent, then run `content:retry`.
-6. For scheduling reversal, inspect every scheduled edition in the root before running `content:revert-to-draft`.
-7. Record an uncertain provider outcome with `content:resolve-publishing-result --yes` only after independently verifying it.
-8. For delete, confirm the exact content ID and effect before running `content:delete`.
-9. Return resulting status or deletion marker, content ID, workspace, integration, the returned `appUrl`, and any provider error. Only label a later non-null HTTPS `permalink` from `content:get` as **View on platform**.
-
-### Approval workflow
-
-Goal: manage internal approval and client review work in standard-plan workspaces.
-
-1. Confirm the workspace has standard-plan access if commands fail with plan errors.
-2. Inspect pending work with `content:pending-approval-count`, `reviews:inbox`, `reviews:list`, `reviews:get`, or the `reviews:history` reads.
-3. Find the workspace's routing with `approval-workflows:list`, and preview it with `reviews:resolve`.
-4. Create a review with team or client stages, or a workflow, using `reviews:create`. Add `sendNow` and `--yes` only after confirmation, because reviewers are notified. `reviews:submit` sends saved content through the routed workflow.
-5. Send a draft review with `reviews:send --yes`, remind waiting reviewers with `reviews:remind --yes`, or cancel with `reviews:cancel --yes`, each after confirmation.
-6. Add or remove items with `reviews:items:add` or `reviews:items:remove --yes`.
-7. Record decisions, overrides or revocations only when the user is the reviewer and asks for it, with `--yes`; include `reason` for rejection or override.
-8. Add comments or attachments with `reviews:items:comment --yes` and `reviews:items:comment-attachments:init`, `complete`, or `abort`.
-9. Return content IDs, review IDs, item IDs, reviewer impact, decision state, and the next reviewer or client step.
-
-### Taxonomy and hashtags workflow
-
-Goal: reuse or maintain labels that shape content planning.
-
-1. Read taxonomy before labeling content:
-   `taxonomy:labels`, `taxonomy:pillars`, and `taxonomy:formats`.
-2. Read hashtag groups with `hashtags:list`.
-3. Create or update hashtag groups with JSON only when the user asks to manage reusable groups.
-4. Confirm before deleting a hashtag group.
-5. Return selected label IDs, pillar IDs, format IDs, campaign IDs, hashtag group ID, and how they map to the content payload.
-
-### Analytics workflow
-
-Goal: read performance data and generate reports safely.
-
-1. Use `analytics:summary --days <1-90|all>` for workspace or integration overview.
-2. Use `analytics:health --integration <id>` for account health.
-3. Use `analytics:posts --integration <id>` for a single account's post list; filter with `--post-type` and `--media-format`.
-4. Use `analytics:posts-aggregate --integration-ids <ids>` for cross-account comparisons; filter with `--post-type` and `--media-format`.
-5. Use `analytics:content-performance --integration-ids <ids> --dimension <postTypes|mediaFormats|pillars|formats|labels|labelGroups>` to compare grouped performance; filter with `--post-type` and `--media-format`. This command and the two filter flags need `maeve-cli` 0.19.0 or later; check root `maeve --help`.
-6. Use `analytics:post --id <contentId>` for one published content item.
-7. Use `analytics:demographics --integration <id>` for audience data.
-8. For full Instagram post history backfill, check `analytics:import-history:status --integration <id>` and start with `analytics:import-history --integration <id> --yes` only after confirmation.
-9. Generate PDF reports with `analytics:report --yes` only after confirmation; report generation is standard-plan only and can be expensive.
-10. Return date range, integrations included, key metric fields requested, report path if generated, and any plan/provider blocker.
-
-### Instagram competitor research workflow
-
-Goal: answer questions about the Instagram accounts a workspace tracks, read-only. The commands need `maeve-cli` 0.17.0 or later.
-
-1. Use `competitors:list` to see the tracked accounts, their `igUserId` and `username`, and your own connected accounts in `eligibleConnections`.
-2. Use `competitors:posts --competitor <igUserId|@username>` for posts with full captions, `permalink`, `postedAt`, `likeCount`, `commentsCount` and `viewCount`. Sort with `--sort recent|likes|comments|views|engagement|rising|discussed|reach`, filter with `--format reels|feed` or `--standouts`, and page with `--limit` (up to 60) and `--offset` against `total`.
-3. Use `competitors:benchmark --competitor <igUserId|@username> --days <7-1095>` for growth, cadence, format mix, engagement, top posts and hashtags.
-4. `viewCount` is reels only and includes paid views. Posts outside the plan's history window are not returned.
-5. Adding or removing a tracked account stays in the app. Do not suggest a CLI command for it.
-
-### Inbox workflow
-
-Goal: read inbox work first, then apply replies, notes, read-state, moderation, or retries safely.
-
-1. Read threads with `inbox:threads --workspace <workspaceId>` using filters such as `--read unread`.
-2. Read messages for a selected thread with `inbox:messages --thread <threadId>`.
-3. Read stats with `inbox:stats` when triaging volume.
-4. Mark individual threads read/unread only after the target thread is clear.
-5. Add internal notes with `inbox:note --json`.
-6. Send public replies with `inbox:reply --yes` only after confirmation.
-7. Moderate public content with `inbox:moderate --yes` only after confirmation.
-8. Retry or delete failed outgoing messages with `--yes` only after confirmation.
-9. Use `inbox:read-all --yes` only after confirming the filter and expected count/scope.
-10. Return thread IDs, message IDs, public/private effect, moderation action, and retry/delete state.
-
-### Task board workflow
-
-Goal: inspect and manage task-board planning state.
-
-1. Read active columns, tasks, and members with `tasks:list`.
-2. Read one task with `tasks:get`; add `--include-comments` or `--include-activity` only when that context is needed.
-3. Read the full comment or activity collections with `tasks:comments` and `tasks:activity`.
-4. Use `tasks:for-post --post-id <contentId>` to inspect tasks linked to one content item.
-5. Use `tasks:linkable-posts` to find content that can be linked (`postId` on create/update).
-6. Create and edit work with `tasks:create`, `tasks:update`, and `tasks:move`. Update payloads carry only changed fields; assignee/label arrays are full replacement sets; `dueAt` is a `YYYY-MM-DD` date.
-7. Manage comments with `tasks:comments:create`, and use the checklist create, update, move, and delete commands listed above.
-8. Delete with `tasks:delete --yes` or `tasks:checklist:delete --yes` only after explicit confirmation; deleted tasks cannot be restored.
-9. Return task IDs, checklist item IDs, linked content IDs, and pagination state after each step.
-
-### Grid planner workflow
-
-Goal: manage visual planning items and promote them to content drafts.
-
-1. List the grid for one integration:
-   `maeve grid:list --workspace <workspaceId> --integration <integrationId>`.
-2. Create visual-only items with uploaded media IDs and `kind: "visual_only"`.
-3. Create linked-post items with `kind: "linked_post"` and `linkedContentId`.
-4. Update notes or aspect ratio with `grid:update`.
-5. Replace visual media with `grid:replace-media`.
-6. Set or remove covers with `grid:set-cover` or `grid:remove-cover`; confirm remove-cover if the result is unclear.
-7. Reorder with `grid:reorder` only when the payload contains the full item ID order for the integration.
-8. Promote to a content draft with `grid:promote --yes` only after confirmation.
-9. Delete with `grid:delete --yes` only after confirmation.
-10. Return item IDs, integration ID, media IDs, linked content ID, order changes, promoted draft ID if present, and next planning step.
-
-### Workbench workflow
-
-Goal: put content on a Workbench content table, such as a monthly plan.
-
-1. Find the table with `workbench:pages:list --type content_table` and match it by title. If none fits, ask before creating one with `workbench:pages:create`.
-2. Find the root post with `content:roots:list`, then add it with `workbench:rows:add --page <pageId> --post <postId>`. Use the root `postId`, not the content ID from `content:create`. A post can be on a table once.
-3. To fill custom columns, read column IDs with `workbench:pages:get` and the row version with `workbench:rows:list`, then send the complete map with `workbench:rows:set-cells`.
-4. Remove a row with `workbench:rows:remove --yes` only after confirmation.
-5. Return the page ID, row (placement) IDs, post IDs, and the new row versions.
-
-## Common sequences
-
-Create a draft:
-
-```bash
-maeve auth:status
-maeve workspaces:list
-maeve integrations:list --workspace <workspaceId>
-maeve integrations:capabilities --workspace <workspaceId> --integration <integrationId>
-maeve content:create --workspace <workspaceId> --json create-content.json
-```
-
-Schedule an existing draft:
-
-```bash
-maeve content:get --workspace <workspaceId> --id <contentId>
-maeve integrations:capabilities --workspace <workspaceId> --integration <integrationId>
-maeve content:schedule --workspace <workspaceId> --id <contentId> --scheduled-at "2026-05-01T10:00:00+10:00"
-```
-
-Upload media then create a draft:
-
-```bash
-maeve media:upload ./asset.png --workspace <workspaceId>
-maeve media:get --workspace <workspaceId> --id <mediaId>
-maeve content:create --workspace <workspaceId> --json create-content.json
-```
+- 0.13.0: the CLI examples in [platform-content.md](platform-content.md).
+- 0.16.0: Workbench commands.
+- 0.17.0: competitor commands, and schedule times without an offset. 0.16.0 or older rejects a `scheduledAt` without an offset.
+- 0.18.0: a browser login lasts 90 days from its last use. 0.17.0 or older stops using a login on the date saved when it was made.
+- 0.19.0: `analytics:content-performance` and the `--post-type` and `--media-format` filters.

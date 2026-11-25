@@ -70,7 +70,7 @@ Use `contentMedia` for per-media metadata:
 | `x`                       | `post`, `thread`          | `image`, `gif`, `video`      |         4 | yes     | no             | no             |
 | `linkedin`                | `post`, `article`, `poll` | `image`, `video`, `document` |        20 | no      | no             | no             |
 | `linkedin-page`           | `post`, `article`, `poll` | `image`, `video`, `document` |        20 | no      | no             | no             |
-| `instagram`               | `post`, `reel`, `story`   | `image`, `video`             |        10 | no      | yes            | no             |
+| `instagram`               | `post`, `reel`, `story`   | `image`, `video`             |        20 | no      | yes            | no             |
 | `facebook`                | `post`, `reel`, `story`   | `image`, `video`             |        10 | no      | no             | no             |
 | `facebook-page`           | `post`, `reel`, `story`   | `image`, `video`             |        10 | no      | no             | no             |
 | `threads`                 | `post`, `thread`          | `image`, `video`             |        20 | yes     | no             | no             |

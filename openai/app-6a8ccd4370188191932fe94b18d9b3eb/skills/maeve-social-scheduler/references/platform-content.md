@@ -30,6 +30,10 @@ Long-form X Articles use `create_article` and `update_article`, not `create_draf
 
 Use `post`, `reel` or `story` with uploaded media. Keep crops, user/product tags and cover metadata in `contentMedia`, not settings. Resolve collaborators through `instagram-collaborators` with the exact username; resolve products through `instagram-catalogs` and then `instagram-products`. Only use option keys advertised for the selected integration.
 
+A post or carousel takes up to 20 images and videos. A Story never publishes `captions`; set `settings.storyCaption` for the caption shown on the Story (2,200 characters and 5 hashtags when scheduled). Several Story attachments publish as separate Stories with the same Story caption.
+
+A post, carousel or Reel can carry a caption poll: `settings.pollOptions` takes 2 to 4 different options of 1 to 25 characters, and the caption is the question, so a poll needs a caption. It closes after 3 days unless `settings.pollDurationExtended` is `true`, requires Facebook Login, and cannot be changed or removed after publishing.
+
 Trial reels require one video and `postType: "reel"`. Set `settings.trialReel` and `trialReelGraduationStrategy` (`manual` or `automatic`); share-to-feed is omitted while trial mode is enabled. Use `trialReel: false` to leave trial mode. Licensed Reel audio requires Facebook Login and a returned `audio_id` from `instagram-audio`. Inspect source audio with MCP operation `inspect_media_audio` directly before choosing `audio_volume` and `video_volume`; a null `hasAudio` is inconclusive.
 
 ## Facebook

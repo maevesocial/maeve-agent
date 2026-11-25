@@ -10,6 +10,8 @@
 - Document LinkedIn link posts and document posts (`settings.linkedinLinkUrl`, `linkedinLinkTitle` and `linkedinDocumentTitle`), and uploading or importing PDF, Word and PowerPoint files through MCP.
 - Document `analytics.get_content_performance`, which compares posts by post type, media format or taxonomy, and the post type and media format filters on post analytics. The CLI's `analytics:content-performance`, `--post-type` and `--media-format` need `maeve-cli` 0.19.0 or later.
 - Document the Instagram auto DM rule fields `flow`, `trackLinkClicks` and `isDraft`, and the CLI's `analytics:import-history` and `content:versions` commands.
+- Document Instagram posts and carousels of up to 20 images and videos, caption polls (`settings.pollOptions`, `pollDurationExtended`) and Story captions (`settings.storyCaption`).
+- Shorten the skill: one home for each rule, playbooks reduced to the facts the command tables do not give, and CLI version requirements gathered in one section. A schedule time may omit its offset where the surface reads it in the workspace timezone, and the confirmation list matches the commands that need `--yes`.
 
 ## 1.1.3
 

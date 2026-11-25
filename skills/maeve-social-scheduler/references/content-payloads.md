@@ -4,26 +4,28 @@ Curated from the `maeve-cli` payload schemas. The CLI validates payloads strictl
 
 ## Contents
 
-- General Rules
-- Content Create
-- Thread Content
-- Schedule Existing Content
-- Immediate Publish
+- General rules
+- Content create
+- LinkedIn poll content
+- Thread content
+- Schedule existing content
+- Immediate publish
+- Published caption edit
 - Media
 - Reviews
 - Inbox
-- Grid Planner
-- Analytics Report
+- Grid planner
+- Analytics report
 
-For platform-specific models and clearing behavior, read [Platform content](platform-content.md).
+For platform-specific models and clearing behavior, read [platform-content.md](platform-content.md).
 
 ## General rules
 
 - Use UUID strings for workspace, integration, content, media, approver, batch, folder, label, pillar, format, campaign, and campaign phase IDs.
 - Grid planner IDs must be UUIDv4 strings.
-- Scheduling times are ISO 8601. MCP and maeve-cli 0.17.0 or later (`content:create`, `content:schedule` and `content:intended-time`) read a time without an offset, such as `2026-05-01T10:00:00`, in the workspace timezone that `workspace.list` returns. The public API and older CLI versions reject a time without an offset, so add one there, for example `2026-05-01T10:00:00+10:00` or `2026-05-01T00:00:00Z`.
+- Scheduling times are ISO 8601. MCP and the CLI (`content:create`, `content:schedule` and `content:intended-time`) read a time without an offset, such as `2026-05-01T10:00:00`, in the workspace timezone that `workspace.list` returns. The public API rejects a time without an offset, so add one there, for example `2026-05-01T10:00:00+10:00` or `2026-05-01T00:00:00Z`.
 - Upload local media through Maeve first, then attach it with `contentMedia[].mediaId`.
-- `contentMedia` accepts up to 20 attachments for `linkedin` and `linkedin-page` and up to 10 for every other platform. maeve-cli 0.16.0 and older stop at 10 for every platform. Thread replies keep their own limit of 10 each. Apply the platform `maxMedia` from capabilities when it is lower.
+- `contentMedia` accepts up to 20 attachments for `instagram`, `linkedin` and `linkedin-page` and up to 10 for every other platform. Thread replies keep their own limit of 10 each. Apply the platform `maxMedia` from capabilities when it is lower.
 - Base content create/update targets one `integrationId` and one integration-scoped content row. Multi-platform composition should fan out to separate grouped rows.
 - For drafts, omit `intent` or include `intent: "draft"`.
 - `content:update` uses the create-content shape except `intent` and `scheduledAt`, and at least one field must be present. Use scheduling or revert-to-draft commands to change publication time.
@@ -99,7 +101,7 @@ Supported content fields:
 - `notes`: optional rich-text HTML, max 100000 characters. Internal - never published. Use to attach planning context, links, or meeting notes to a content item.
 - `captions`: optional object with `canonical` publish text and optional platform overrides.
 - `contentMedia`: optional uploaded media relationships, within the attachment limit in General rules.
-- `scheduledAt`: optional ISO 8601 time with an offset; see General rules.
+- `scheduledAt`: optional ISO 8601 time; General rules say when it needs an offset.
 - `settings`: optional object for platform fields from capabilities.
 - `postType`: optional `post`, `reel`, `story`, `thread`, or `poll` (LinkedIn only; requires the top-level `poll` object).
 - `poll`: LinkedIn poll content, only with `postType: "poll"`. Question up to 140 characters, 2 to 4 options up to 30 characters each, `duration` of `ONE_DAY`, `THREE_DAYS`, `SEVEN_DAYS`, or `FOURTEEN_DAYS`, `voteSelectionType: "SINGLE_VOTE"`, `isVoterVisibleToAuthor: true`. Polls cannot carry media, documents, or article content.
@@ -217,7 +219,7 @@ Upload files first:
 maeve media:upload ./image.png --workspace <workspaceId>
 ```
 
-Supported upload extensions:
+Supported upload extensions and sizes, which also apply to MCP `media.upload`, `media.upload_batch` and `media.import`:
 
 - Images: `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`, `.avif`, max 50 MB.
 - Videos: `.mp4`, `.mov`, max 512 MB.
@@ -275,7 +277,7 @@ Media constraints:
 
 ## Reviews
 
-A review holds one item per content and ordered team or client stages. The CLI rejects unknown fields.
+A review holds one item per content and ordered team or client stages.
 
 Create a review with `reviews:create`. `sendNow: true` notifies the first stage:
 
@@ -488,7 +490,7 @@ Grid constraints:
 - `mediaIds` and `itemIds` must be unique.
 - `coverMediaId` can be a UUIDv4 string or null.
 - `settings.aspectRatio` can be null or a number from 0.1 to 10.
-- Replace-media accepts 1 to 10 media IDs.
+- Replace-media accepts 1 to 20 media IDs.
 
 ## Analytics report
 

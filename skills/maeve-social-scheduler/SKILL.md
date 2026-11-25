@@ -23,7 +23,7 @@ For a confirmation-gated MCP operation, put the exact required `confirmationText
 
 ## Results and recovery
 
-Report the affected IDs, workspace, destination and status, plus scheduled time when relevant. Label the returned `appUrl` **Open in Maeve**; never invent app URLs. Return a non-null HTTPS `permalink` from a `content.get` read as **View on platform**.
+After every change, report the affected IDs, workspace, destination and status, the scheduled time with timezone when relevant, the external effect, and the next step when the action failed or is pending. Label the returned `appUrl` **Open in Maeve**; never build an app URL from names, slugs or IDs. After publication, return a non-null HTTPS `permalink` from a `content.get` read as **View on platform**. A null permalink is a valid result; never build a provider URL from `platformPostId`, a resource name or a URL pattern.
 
 A queued response, sent status or provider ID is not proof of native visibility. When the task requires live verification, check the provider author, rendered content and resource identity separately. Supported provider deletion can retain the sent audit in Maeve.
 
@@ -36,9 +36,9 @@ Inspect conflicts before changing input. Don't retry `plan_required`, `forbidden
 Load only what the task needs:
 
 - [mcp-tools.md](references/mcp-tools.md): connection, catalog discovery, execution, upload, batches, paid ads and recovery.
-- [command-reference.md](references/command-reference.md): CLI command groups and sequences.
+- [command-reference.md](references/command-reference.md): CLI commands by risk, their non-obvious rules and older CLI versions.
 - [content-payloads.md](references/content-payloads.md): JSON shapes, scheduling times and attachment limits.
-- [integration-capabilities.md](references/integration-capabilities.md): capability shape, platform matrix and dynamic options.
+- [integration-capabilities.md](references/integration-capabilities.md): capability shape, integration statuses, platform matrix and dynamic options.
 - [platform-content.md](references/platform-content.md): platform inputs, clearing and publication evidence.
 - [safety-policy.md](references/safety-policy.md): notifications, destructive actions, confirmation fields and the CLI `--yes` list.
-- [troubleshooting.md](references/troubleshooting.md): authentication, validation, permissions and provider errors.
+- [troubleshooting.md](references/troubleshooting.md): CLI and MCP authentication, validation, permission and provider errors.

@@ -1,18 +1,19 @@
 # Troubleshooting
 
-Use this when CLI commands fail or return validation/provider errors.
+Use this when CLI commands or MCP operations fail or return validation or provider errors.
 
 ## Contents
 
-- Auth Failures
-- Missing Workspace
-- Missing Or Unusable Integration
-- JSON Validation Errors
-- Timezone Errors
-- Platform Requirement Errors
-- Plan Or Role Errors
-- Rate Limits And Provider Errors
-- Output And Debugging
+- Auth failures
+- Missing workspace
+- Missing or unusable integration
+- JSON validation errors
+- Timezone errors
+- Platform requirement errors
+- Provider errors
+- Plan or role errors
+- Rate limits and transient errors
+- Output and debugging
 
 ## Auth failures
 
@@ -36,7 +37,7 @@ For automation, prefer env vars. For local sessions, use:
 maeve auth:login
 ```
 
-Browser login tokens are stored per API URL and last 90 days from their last use, so a terminal in regular use stays signed in. maeve-cli 0.17.0 or older stops using a login on the date saved when it was made, so upgrade to 0.18.0 or later.
+Browser login tokens are stored per API URL and last 90 days from their last use, so a terminal in regular use stays signed in.
 
 For workspace-scoped keys stored under a named environment variable, do not paste the key value into commands or chat. Pass the variable name:
 
@@ -47,15 +48,9 @@ maeve --api-key-env MAEVE_API_KEY_WORKSPACE media:labels:list --workspace <works
 
 When `--api-key-env` is provided, that named variable must exist. The CLI will not silently fall back to `MAEVE_API_KEY`.
 
-For hosted MCP, the fix is the MCP client's own connect step, never the CLI. Claude Code: run `/mcp`, choose `maeve`, and approve Maeve in the browser. Codex: run `codex mcp login maeve` and approve Maeve in the browser. Other clients: their own **Authenticate** action for `maeve`. The client handles the redirect itself, so do not paste the authorization URL into chat or ask for it back.
+For hosted MCP, the fix is the MCP client's own connect step, never the CLI. The steps, token lifetimes and API-key fallback are in [mcp-tools.md](mcp-tools.md#connection).
 
-MCP access tokens last 6 hours and refresh through 90-day rotating refresh tokens. If an MCP client cannot refresh, was revoked, or asks for approval again, run the same connect step again. Organization admins can revoke active AI tool connections in Maeve **Settings -> Developer**.
-
-If browser auth is not supported by the MCP client, use the API-key fallback. Set `MAEVE_API_KEY` in the shell or client secret storage. Do not put the key in `.mcp.json`, `config.toml`, command history, screenshots, or chat.
-
-CLI login is separate. `maeve auth:login` signs in the CLI only; it does not create an MCP token.
-
-If `maeve --help` shows `media:tags:*` instead of `media:labels:*`, the globally installed CLI is stale. Upgrade with `npm install -g maeve-cli@latest`, or run commands through `npx maeve-cli@latest` until the global install is refreshed.
+If `maeve --help` shows `media:tags:*` instead of `media:labels:*`, or a login expires despite regular use, the installed CLI is stale. Upgrade as described in [command-reference.md](command-reference.md#older-cli-versions).
 
 ## Missing workspace
 
@@ -69,19 +64,7 @@ If a workspace is missing, the current credential likely does not belong to the 
 
 ## Missing or unusable integration
 
-Run:
-
-```bash
-maeve integrations:list --workspace <workspaceId>
-maeve integrations:capabilities --workspace <workspaceId> --integration <integrationId>
-```
-
-Status meanings:
-
-- `connected`: safe to use.
-- `requires_reauth`: ask the user to reconnect the social account.
-- `disabled`: ask the user to enable or choose another integration.
-- `auth_incomplete`: ask the user to finish provider authorization.
+Run `integrations:list` and `integrations:capabilities`, then act on the integration status as listed in [integration-capabilities.md](integration-capabilities.md#response-shape).
 
 If capabilities says an option key is unsupported, refetch capabilities for the exact integration ID; option keys are platform-specific.
 
@@ -94,7 +77,7 @@ Common fixes:
 - Include at least one field for update payloads.
 - For create content, include `integrationId` and at least one useful draft field such as `captions.canonical`, `internalTitle`, `publishTitle`, or `contentMedia`.
 - Keep `captions.canonical` and caption overrides at or below 25000 characters.
-- Use `contentMedia` for content attachments, within the [attachment limit](content-payloads.md#general-rules) and the platform `maxMedia` from capabilities.
+- Use `contentMedia` for content attachments: up to 20 for `instagram`, `linkedin` and `linkedin-page`, 10 for every other platform, and no more than the platform `maxMedia` from capabilities.
 - For approval/client-review comments, include `body` or `attachmentId`.
 - For inbox replies, include `content` or `attachment`.
 - For grid create, include `mediaIds` for `visual_only` or `linkedContentId` for `linked_post`.
@@ -102,56 +85,31 @@ Common fixes:
 
 ## Timezone errors
 
-The public API and maeve-cli 0.16.0 or older reject a `scheduledAt` without an offset; MCP and maeve-cli 0.17.0 or later read it in the workspace timezone. Add an offset such as `+10:00` or UTC `Z`:
+MCP and the CLI read a `scheduledAt` without an offset in the workspace timezone. The public API and an [older CLI](command-reference.md#older-cli-versions) reject it. Add an offset such as `+10:00` or UTC `Z`:
 
 ```json
 { "scheduledAt": "2026-05-01T10:00:00+10:00" }
 ```
 
-See [content-payloads.md](content-payloads.md#general-rules) for the full rule. Do not use vague dates such as "tomorrow morning" in payloads.
+Do not use vague dates such as "tomorrow morning" in payloads.
 
 ## Platform requirement errors
 
-Run capabilities before retrying:
+Run `integrations:capabilities` for the integration before retrying, then fix the payload against the rules in [integration-capabilities.md](integration-capabilities.md#agent-rules) and the platform's section of [platform-content.md](platform-content.md).
 
-```bash
-maeve integrations:capabilities --workspace <workspaceId> --integration <integrationId>
-```
-
-Then check:
-
-- `requiresMedia`: upload/select media first.
-- `requiresTitle`: include `publishTitle`.
-- `maxMedia`: reduce attached media.
-- `postTypes`: choose a supported `postType`.
-- `mediaTypes`: choose supported uploaded media.
-- `settings.fields`: move platform-specific values into `settings` using supported keys.
-- `optionKey`: fetch dynamic options before choosing values.
-
-Known strict cases:
-
-- Pinterest requires media, `publishTitle`, and `settings.boardId`. A video Pin without a cover uses the video's stored poster, or its first frame.
-- A published content item with `publishWarnings` containing `video_cover_not_applied` went out without its cover; the message says why and what the post shows instead. Do not republish to fix it: check the cover media and the platform's own cover settings, such as custom-thumbnail access in YouTube Studio.
-- YouTube requires one video and `publishTitle`.
-- TikTok requires media and every post publishes publicly. `publishTitle` is optional.
-
-Provider behavior confirmed in live testing (2026-08-18):
+## Provider errors
 
 - X rejects a post whose text matches a recent post with 403 "duplicate content". Text-only threads with identical messages always trip this; vary the text per message.
 - Instagram rejects an unresolvable `audio_id` with subcode 2207065 and the misleading message "audio_id is not a valid parameter for the media type, REELS". It usually means the audio ID does not exist; source IDs from the `instagram-audio` option key.
-- Pinterest rejects production pins to Sandbox boards with provider code 15, and the boards listing does not identify Sandbox boards. If a pin fails this way, choose a different board.
-- Read `platformPostId`, reply identities and `permalink` from MCP operation `content.get` through `maeve_read` after publishing. Link availability differs by provider and can remain null; do not promise that the next analytics sync will populate it. TikTok `deliveryMode: tiktok_drafts` still requires publication in the TikTok app. Google Offer owner status can say Published before a public card is visible.
-- Instagram requires media.
+- Pinterest provider code 15 and a `video_cover_not_applied` publish warning are covered in [platform-content.md](platform-content.md).
 
 ## Plan or role errors
 
 Approval history, client reviews, approval decisions and comments, pending approval counts, and analytics PDF reports require the Standard plan. Boosts and paid ads require the Basic plan, except the TikTok publication reads, reconcile and pause that keep recovery open. Each also needs a workspace role that allows it.
 
-Don't retry `plan_required`, `forbidden` or `not_found`. Report the plan, role or missing resource, and do not retry with different payloads unless the user changes workspace or account.
+Report the plan, role or missing resource instead of retrying. Retry rules for every error type are in [mcp-tools.md](mcp-tools.md#recovery).
 
-## Rate limits and provider errors
-
-If a command fails with rate limit or provider errors:
+## Rate limits and transient errors
 
 - Do not immediately loop retries.
 - Preserve the command, workspace, integration, content/media/message ID, provider/platform, and error code/message in the response.
